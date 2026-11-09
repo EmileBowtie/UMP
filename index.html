@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05040a">
+<title>UMP: Ultimate Math Practice</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+  :root {
+    --bg: #05040a;
+    --surface: #14111a;
+    --surface-2: #1e1a26;
+    --line: #2e2938;
+    --text: #f0ebf5;
+    --muted: #a89fb8;
+    --accent: #e879f9;
+    --accent-ink: #1a0a1f;
+    --ok: #6ee7a8;
+    --bad: #f09aa6;
+    --ok-bg: #153028;
+    --bad-bg: #3a1e28;
+    --amber: #f5c97a;
+    --neon: #e879f9;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%; margin: 0;
+    background: #020105;
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.45;
+  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* Full-viewport seamless background — always visible */
+  .organic-bg {
+    position: fixed; inset: 0;
+    pointer-events: none; overflow: hidden; z-index: 0;
+    background: #05040a;
+  }
+  .organic-bg svg {
+    position: absolute;
+    width: 300%; height: 200%;
+    left: 0; top: -50%;
+  }
+  .organic-bg .layer { animation: drift linear infinite; will-change: transform; }
+  .organic-bg .layer.a { animation-duration: 80s; opacity: 0.85; }
+  .organic-bg .layer.b { animation-duration: 110s; animation-direction: reverse; opacity: 0.7; }
+  .organic-bg .layer.c { animation-duration: 140s; opacity: 0.55; }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-33.333%, 0, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .organic-bg .layer { animation: none; }
+  }
+
+  .app {
+    position: relative; z-index: 1;
+    height: 100dvh;
+    display: flex; justify-content: center;
+  }
+  .phone {
+    position: relative;
+    width: min(100%, 460px);
+    height: 100dvh;
+    overflow: hidden;
+    /* transparent by default — no black bar on home */
+    background: transparent;
+    transition: background 0.45s ease;
+  }
+  .phone.panel {
+    background: rgba(5, 4, 10, 0.88);
+  }
+  @media (min-width: 600px) {
+    .phone.panel {
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+    }
+  }
+
+  .screen {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    overflow-y: auto; scrollbar-width: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.on {
+    display: flex;
+    opacity: 1;
+  }
+
+  :focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+  .btn {
+    background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 999px;
+    padding: 13px 26px; font: inherit; font-weight: 700;
+    cursor: pointer; min-height: 48px;
+    transition: filter 0.15s, transform 0.1s;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(0.98); }
+  .btn.secondary {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--line);
+  }
+  .btn.big { font-size: 1.2rem; padding: 16px 42px; min-height: 56px; }
+  .link {
+    background: none; border: 0; padding: 4px;
+    color: var(--muted); text-decoration: underline;
+    font: inherit; cursor: pointer;
+  }
+
+  /* ---------- Home (no dark panel) ---------- */
+  #home {
+    background: transparent;
+    align-items: center; justify-content: center;
+    padding: 24px; overflow: hidden;
+  }
+  .home-in {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    text-align: center;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 22px; margin: auto;
+  }
+  .kick {
+    margin: 0; color: var(--neon);
+    font-size: 0.95rem; letter-spacing: 0.06em; font-weight: 600;
+    text-shadow: 0 0 20px rgba(232, 121, 249, 0.55);
+  }
+  .home-title {
+    margin: 0;
+    font-size: clamp(1.9rem, 8vw, 2.55rem);
+    line-height: 1.12; font-weight: 600; color: var(--text);
+  }
+  .controls {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    justify-content: center; width: 100%;
+  }
+  .controls .btn { padding: 10px 20px; font-size: 0.98rem; }
+  .meta {
+    margin: -6px 0 0; color: #c4b8d4;
+    font-size: 0.9rem; min-height: 1.3em;
+  }
+  .home-foot {
+    position: relative; z-index: 1;
+    margin-top: auto; padding-top: 16px;
+    text-align: center; color: #b8aec8; font-size: 0.8rem;
+  }
+  .home-foot .link { color: #c4b8d4; font-size: 0.8rem; }
+
+  /* Custom dropdown */
+  .dd { position: relative; flex: 1 1 200px; min-width: 0; text-align: left; }
+  .dd-toggle {
+    width: 100%; min-height: 48px;
+    background: rgba(18, 16, 26, 0.85);
+    color: #e8e2f0; border: 1px solid #3a3448;
+    border-radius: 12px; padding: 12px 40px 12px 16px;
+    font: inherit; font-size: 0.98rem; cursor: pointer;
+    display: flex; align-items: center;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    position: relative; backdrop-filter: blur(8px);
+  }
+  .dd-toggle::after {
+    content: ""; position: absolute; right: 16px; top: 50%;
+    width: 0; height: 0;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-top: 6px solid var(--muted);
+    transform: translateY(-40%); transition: transform 0.2s;
+  }
+  .dd.open .dd-toggle::after { transform: translateY(-40%) rotate(180deg); }
+  .dd-toggle:hover, .dd.open .dd-toggle {
+    border-color: var(--neon);
+    box-shadow: 0 0 0 1px rgba(232, 121, 249, 0.3);
+  }
+  .dd-menu {
+    display: none; position: absolute;
+    top: calc(100% + 6px); left: 0; right: 0;
+    background: #16131f; border: 1px solid #3a3448;
+    border-radius: 14px; max-height: 320px; overflow-y: auto;
+    z-index: 50; padding: 10px 0;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+  }
+  .dd.open .dd-menu { display: block; }
+  .dd-group { padding: 8px 0 4px; }
+  .dd-group-label {
+    padding: 8px 18px 6px; font-size: 0.75rem;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .dd-item {
+    display: block; width: 100%; text-align: left;
+    background: none; border: 0; color: #e8e2f0;
+    font: inherit; font-size: 0.98rem; padding: 12px 18px;
+    cursor: pointer; transition: color 0.12s, background 0.12s;
+  }
+  .dd-item:hover { color: var(--neon); background: rgba(232, 121, 249, 0.1); }
+  .dd-item.active { color: var(--neon); font-weight: 600; }
+
+  /* ---------- Learn ---------- */
+  #learn { padding: calc(18px + env(safe-area-inset-top)) 22px 0; }
+  #learn .back { align-self: flex-start; }
+  #learn h2 { margin: 10px 0 14px; font-size: 1.45rem; }
+  .lcard {
+    background: var(--surface); border-radius: 16px;
+    padding: 16px 18px; margin: 0 0 12px;
+  }
+  .lcard h3 { margin: 0 0 10px; font-size: 1.12rem; color: var(--neon); }
+  .lcard ul { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+  .lcard li {
+    background: var(--surface-2); border-radius: 10px;
+    padding: 10px 12px; font-size: 0.95rem; line-height: 1.4;
+  }
+  .lfoot {
+    position: sticky; bottom: 0; margin-top: auto;
+    padding: 14px 0 calc(16px + env(safe-area-inset-bottom));
+    text-align: center;
+    background: linear-gradient(rgba(5,4,10,0), rgba(5,4,10,0.95) 40%);
+  }
+
+  /* ---------- Session ---------- */
+  .bar { height: 3px; background: rgba(255,255,255,0.1); flex: 0 0 auto; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.25s; }
+  .s-top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 0;
+    flex: 0 0 auto;
+  }
+  .timer {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    font-size: 1.55rem;
+    color: var(--neon);
+    min-width: 2.8em;
+    text-align: left;
+    padding-left: 2px;
+    text-shadow: 0 0 16px rgba(232, 121, 249, 0.55);
+    letter-spacing: 0.02em;
+  }
+  .timer.warn { color: var(--amber); text-shadow: none; }
+  .timer.crit { color: var(--bad); text-shadow: none; }
+  .x {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #e8e2f0;
+    font-size: 1.35rem;
+    width: 44px; height: 44px;
+    cursor: pointer; line-height: 1;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .x:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); }
+  .s-body {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    width: 100%;
+    padding: 8px 22px calc(26px + env(safe-area-inset-bottom));
+    gap: 20px; text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .s-body.math-ready { opacity: 1; }
+  #learnlist, #review {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  #learnlist.math-ready, #review.math-ready { opacity: 1; }
+  .question {
+    font-size: 1.45rem; line-height: 1.4;
+    margin: 0; font-weight: 600; max-width: 100%;
+  }
+  .phase-tag {
+    font-size: 0.75rem; color: var(--muted);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin: 0 0 -8px;
+  }
+  .options { display: grid; gap: 11px; width: 100%; max-width: 380px; }
+  .option {
+    text-align: left; font: inherit; font-size: 1.1rem;
+    color: var(--text); background: var(--surface);
+    border: 1.5px solid var(--line); border-radius: 14px;
+    padding: 15px 16px; min-height: 56px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .option:active:not(:disabled) { transform: scale(0.985); }
+  .option:disabled { cursor: default; }
+  .option.correct { background: var(--ok-bg); border-color: var(--ok); }
+  .option.wrong { background: var(--bad-bg); border-color: var(--bad); }
+  .mark { font-weight: 700; }
+  .fbline {
+    margin: 0; color: var(--muted);
+    min-height: 2.8em; font-size: 0.95rem;
+    max-width: 380px; text-align: left;
+  }
+  .s-body .btn { visibility: hidden; width: 100%; max-width: 380px; }
+  .s-body .btn.show { visibility: visible; }
+
+  /* ---------- Review ---------- */
+  #review {
+    padding: calc(26px + env(safe-area-inset-top)) 22px calc(30px + env(safe-area-inset-bottom));
+    gap: 20px;
+  }
+  #review h2 { margin: 0; font-size: 1.1rem; color: var(--muted); font-weight: 600; }
+  .score { font-size: 3.2rem; font-weight: 700; line-height: 1; margin: 6px 0 0; }
+  .score small { font-size: 1rem; color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .sub { margin: 4px 0 0; color: var(--muted); }
+  .sec h3 { margin: 0 0 10px; font-size: 1rem; }
+  .miss { background: var(--surface); border-radius: 14px; margin: 0 0 8px; }
+  .miss summary { padding: 14px 16px; cursor: pointer; list-style: none; }
+  .miss summary::-webkit-details-marker { display: none; }
+  .miss .q { display: block; font-weight: 600; }
+  .miss .a { display: block; color: var(--muted); font-size: 0.92rem; margin-top: 2px; }
+  .miss .why { padding: 0 16px 14px; color: var(--text); font-size: 0.95rem; display: grid; gap: 8px; }
+  .miss .why b { color: var(--amber); font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 0.85rem; }
+  .actions { display: grid; gap: 10px; margin-top: 4px; }
+  .clean { background: var(--surface); border-radius: 14px; padding: 14px 16px; }
+
+  .katex { font-size: 1.08em; }
+  .lcard .katex { font-size: 1.02em; }
+</style>
+</head>
+<body>
+<h1 class="sr">UMP: Ultimate Math Practice</h1>
+
+<!-- Full-viewport seamless background -->
+<div class="organic-bg" aria-hidden="true">
+  <svg class="layer a" viewBox="0 0 3600 800" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#6b3088" stroke-width="2.6" stroke-linecap="round">
+      <path d="M0,120 C150,40 350,200 600,110 C850,20 1050,180 1300,90 C1550,0 1750,160 2000,70 C2250,-20 2450,140 2700,50 C2950,-40 3150,120 3600,30"/>
+      <path d="M0,210 C150,130 350,280 600,190 C850,100 1050,260 1300,170 C1550,80 1750,240 2000,150 C2250,60 2450,220 2700,130 C2950,40 3150,200 3600,110"/>
+      <path d="M0,300 C150,220 350,370 600,280 C850,190 1050,350 1300,260 C1550,170 1750,330 2000,240 C2250,150 2450,310 2700,220 C2950,130 3150,290 3600,200"/>
+      <path d="M0,390 C150,310 350,460 600,370 C850,280 1050,440 1300,350 C1550,260 1750,420 2000,330 C2250,240 2450,400 2700,310 C2950,220 3150,380 3600,290"/>
+      <path d="M0,480 C150,400 350,550 600,460 C850,370 1050,530 1300,440 C1550,350 1750,510 2000,420 C2250,330 2450,490 2700,400 C2950,310 3150,470 3600,380"/>
+      <path d="M0,570 C150,490 350,640 600,550 C850,460 1050,620 1300,530 C1550,440 1750,600 2000,510 C2250,420 2450,580 2700,490 C2950,400 3150,560 3600,470"/>
+      <path d="M0,660 C150,580 350,730 600,640 C850,550 1050,710 1300,620 C1550,530 1750,690 2000,600 C2250,510 2450,670 2700,580 C2950,490 3150,650 3600,560"/>
+    </g>
+    <g fill="none" stroke="#8a40a8" stroke-width="1.9" opacity="0.8">
+      <path d="M50,50 C300,-20 550,120 900,40 C1250,-40 1500,100 1850,30 C2200,-40 2450,80 2800,20 C3150,-40 3400,60 3600,10"/>
+      <path d="M40,250 C290,170 540,320 890,240 C1240,160 1490,300 1840,220 C2190,140 2440,280 2790,200 C3140,120 3390,260 3600,180"/>
+      <path d="M30,450 C280,370 530,520 880,440 C1230,360 1480,500 1830,420 C2180,340 2430,480 2780,400 C3130,320 3380,460 3600,380"/>
+    </g>
+  </svg>
+  <svg class="layer b" viewBox="0 0 3600 800" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#5a2870" stroke-width="2.3">
+      <path d="M3600,100 C3300,180 3000,40 2700,130 C2400,220 2100,50 1800,140 C1500,230 1200,70 900,160 C600,250 300,90 0,180"/>
+      <path d="M3600,280 C3300,360 3000,220 2700,310 C2400,400 2100,230 1800,320 C1500,410 1200,250 900,340 C600,430 300,270 0,360"/>
+      <path d="M3600,460 C3300,540 3000,400 2700,490 C2400,580 2100,410 1800,500 C1500,590 1200,430 900,520 C600,610 300,450 0,540"/>
+    </g>
+  </svg>
+  <svg class="layer c" viewBox="0 0 3600 800" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#4a2060" stroke-width="2.8">
+      <path d="M0,200 C300,120 600,280 1000,180 C1400,80 1800,260 2200,160 C2600,60 3000,240 3600,140"/>
+      <path d="M0,420 C300,340 600,500 1000,400 C1400,300 1800,480 2200,380 C2600,280 3000,460 3600,360"/>
+    </g>
+  </svg>
+</div>
+
+<div class="app">
+  <div class="phone" id="phone">
+
+    <section class="screen on" id="home" aria-labelledby="home-h">
+      <div class="home-in">
+        <p class="kick">UMP: Ultimate Math Practice</p>
+        <div class="controls">
+          <div class="dd" id="scope-dd">
+            <button type="button" class="dd-toggle" id="dd-toggle" aria-haspopup="listbox" aria-expanded="false">All topics</button>
+            <div class="dd-menu" id="dd-menu" role="listbox"></div>
+          </div>
+          <button type="button" class="btn" id="learnbtn">Learn formulas</button>
+        </div>
+        <h2 class="home-title" id="home-h">Formula Memorization</h2>
+        <button type="button" class="btn big" id="start">Start Training</button>
+        <p class="meta" id="meta" aria-live="polite"></p>
+      </div>
+      <div class="home-foot">Results stay in this browser only. <button type="button" class="link" id="reset">Reset my results</button></div>
+    </section>
+
+    <section class="screen" id="learn" aria-labelledby="learn-h">
+      <button type="button" class="link back" id="learnback">← Back</button>
+      <h2 id="learn-h"></h2>
+      <div id="learnlist"></div>
+      <div class="lfoot"><button type="button" class="btn big" id="learnstart">Start Training</button></div>
+    </section>
+
+    <section class="screen" id="session" aria-label="Practice session">
+      <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+      <div class="s-top">
+        <div class="timer" id="timer">30</div>
+        <button type="button" class="x" id="end" aria-label="End session">×</button>
+      </div>
+      <div class="s-body" id="sbody"></div>
+    </section>
+
+    <section class="screen" id="review" aria-labelledby="review-h"></section>
+
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   UMP — Formula Memorization Practice
+   Structure: topics → formula questions first → instance questions
+   ================================================================ */
+
+const TIME_LIMIT = 30;
+const STORAGE = {
+  attempts: 'ump-f-v2',
+  state: 'ump-fs-v2',
+  scope: 'ump-fsc-v2'
+};
+const INTERVALS = [1, 3, 7, 14, 30];
+const DAY = 864e5;
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+function rd(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } }
+function wr(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+const loadAttempts = () => rd(STORAGE.attempts, []);
+const loadState = () => rd(STORAGE.state, {});
+function saveAttempt(r) { const a = loadAttempts(); a.push(r); wr(STORAGE.attempts, a); }
+function updateSchedule(id, perfect) {
+  const st = loadState();
+  const cur = st[id] ? st[id].box : 0;
+  const box = perfect ? Math.min((cur || 1) + 1, 5) : 1;
+  st[id] = { box, due: Date.now() + INTERVALS[box - 1] * DAY };
+  wr(STORAGE.state, st);
+  return st[id];
+}
+function inDays(ts) {
+  const d = Math.round((ts - Date.now()) / DAY);
+  return d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`;
+}
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+const coarse = () => matchMedia('(pointer: coarse)').matches;
+function randInt(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/** Ensure three options are unique strings; return null if not. */
+function uniqueOptions(correct, w1, w2) {
+  const s = new Set([String(correct), String(w1), String(w2)]);
+  if (s.size < 3) return null;
+  return [String(correct), String(w1), String(w2)];
+}
+
+/* ---------- KaTeX render helper (prevents FOUC) ---------- */
+function waitForKatex(cb) {
+  if (window.renderMathInElement && window.katex) {
+    cb();
+    return;
+  }
+  let n = 0;
+  const t = setInterval(() => {
+    n++;
+    if ((window.renderMathInElement && window.katex) || n > 50) {
+      clearInterval(t);
+      cb();
+    }
+  }, 40);
+}
+
+function renderMath(el, then) {
+  if (!el) return;
+  el.classList.remove('math-ready');
+  // stay at opacity 0 until math is painted
+  waitForKatex(() => {
+    const paint = () => {
+      try {
+        if (window.renderMathInElement) {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '\\(', right: '\\)', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      } catch (e) { /* ignore */ }
+      // two frames so the browser has applied KaTeX DOM/CSS before fade-in
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.classList.add('math-ready');
+          if (then) then();
+        });
+      });
+    };
+    // Prefer waiting for webfonts if available
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(paint).catch(paint);
+    } else {
+      paint();
+    }
+  });
+}
+
+/* ================================================================
+   TOPICS — pure formula memorization
+   Each topic has:
+     - overview: shown on Learn screen
+     - formulas: abstract formula-recall questions (always first)
+     - gen (optional): produces one instantiated exercise
+   ================================================================ */
+
+const TOPICS = [
+  {
+    id: 'sqrt',
+    name: 'Square roots',
+    overview: [
+      '\\(\\sqrt{ab} = \\sqrt{a}\\cdot\\sqrt{b}\\) (a,b ≥ 0)',
+      '\\(\\sqrt{\\dfrac{a}{b}} = \\dfrac{\\sqrt{a}}{\\sqrt{b}}\\) (b > 0)',
+      '\\(\\sqrt{a^2} = |a|\\)',
+      '\\((\\sqrt{a})^2 = a\\) (a ≥ 0)'
+    ],
+    formulas: [
+      { q: 'What is \\(\\sqrt{ab}\\) equal to?', o: ['\\(\\sqrt{a}\\cdot\\sqrt{b}\\)', '\\(\\sqrt{a}+\\sqrt{b}\\)', '\\(a\\sqrt{b}\\)'], a: 0, e: 'Product rule for radicals.', w: ['', 'Cannot add under one root.', 'Wrong form.'] },
+      { q: 'What is \\(\\sqrt{\\dfrac{a}{b}}\\) equal to?', o: ['\\(\\dfrac{\\sqrt{a}}{\\sqrt{b}}\\)', '\\(\\dfrac{a}{\\sqrt{b}}\\)', '\\(\\sqrt{a-b}\\)'], a: 0, e: 'Quotient rule for radicals.', w: ['', 'Incomplete.', 'Wrong.'] },
+      { q: 'What is \\(\\sqrt{a^2}\\)?', o: ['\\(|a|\\)', '\\(a\\)', '\\(a^2\\)'], a: 0, e: 'Principal square root is non-negative → absolute value.', w: ['', 'Misses the absolute value.', 'Did not take root.'] },
+      { q: 'What is \\((\\sqrt{a})^2\\) (a ≥ 0)?', o: ['\\(a\\)', '\\(\\sqrt{a}\\)', '\\(a^2\\)'], a: 0, e: 'Squaring undoes the square root.', w: ['', 'Still has root.', 'Wrong power.'] }
+    ],
+    gen() {
+      for (let i = 0; i < 20; i++) {
+        const a = randInt(4, 12), b = randInt(2, 11);
+        const type = pick(['prod', 'quot', 'sq']);
+        if (type === 'prod') {
+          const o = uniqueOptions(`${a}\\sqrt{${b}}`, `${a * b}`, `\\sqrt{${a}}\\cdot${b}`);
+          if (!o) continue;
+          return { q: `What is \\(\\sqrt{${a * a * b}}\\) simplified?`, o: o.map(x => `\\(${x}\\)`), a: 0, e: `\\(\\sqrt{${a * a}\\times${b}} = ${a}\\sqrt{${b}}\\).`, w: ['', 'Did not extract perfect square.', 'Wrong.'] };
+        }
+        if (type === 'quot') {
+          const o = uniqueOptions(`\\dfrac{${a}}{${b}}`, `\\dfrac{${a * a}}{${b}}`, `${a * b}`);
+          if (!o) continue;
+          return { q: `What is \\(\\sqrt{\\dfrac{${a * a}}{${b * b}}}\\)?`, o: o.map(x => `\\(${x}\\)`), a: 0, e: `\\(\\dfrac{\\sqrt{${a * a}}}{\\sqrt{${b * b}}} = \\dfrac{${a}}{${b}}\\).`, w: ['', 'Root only numerator.', 'Multiplied.'] };
+        }
+        const o = uniqueOptions(String(a), String(a * a), String(2 * a));
+        if (!o) continue;
+        return { q: `What is \\(\\sqrt{${a * a}}\\)?`, o, a: 0, e: `\\(\\sqrt{${a}^2} = |${a}| = ${a}\\).`, w: ['', 'Did not take the root.', 'Multiplied instead.'] };
+      }
+      return { q: 'What is \\(\\sqrt{36}\\)?', o: ['6', '36', '18'], a: 0, e: '6² = 36.', w: ['', 'Did not root.', 'Halved.'] };
+    }
+  },
+
+  {
+    id: 'pow',
+    name: 'Powers',
+    overview: [
+      '\\(a^m \\cdot a^n = a^{m+n}\\)',
+      '\\(\\dfrac{a^m}{a^n} = a^{m-n}\\)',
+      '\\((a^m)^n = a^{mn}\\)',
+      '\\(a^0 = 1\\) (a ≠ 0)',
+      '\\(a^{-n} = \\dfrac{1}{a^n}\\)',
+      '\\((ab)^n = a^n b^n\\)'
+    ],
+    formulas: [
+      { q: 'What is \\(a^m \\cdot a^n\\)?', o: ['\\(a^{m+n}\\)', '\\(a^{mn}\\)', '\\(a^{m-n}\\)'], a: 0, e: 'Same base → add exponents.', w: ['', 'That is power of a power.', 'That is division.'] },
+      { q: 'What is \\(\\dfrac{a^m}{a^n}\\)?', o: ['\\(a^{m-n}\\)', '\\(a^{m+n}\\)', '\\(a^{m/n}\\)'], a: 0, e: 'Same base → subtract exponents.', w: ['', 'Addition rule.', 'Wrong.'] },
+      { q: 'What is \\((a^m)^n\\)?', o: ['\\(a^{mn}\\)', '\\(a^{m+n}\\)', '\\(a^{m^n}\\)'], a: 0, e: 'Power of a power → multiply exponents.', w: ['', 'Addition rule.', 'Wrong nesting.'] },
+      { q: 'What is \\(a^0\\) (a ≠ 0)?', o: ['1', '0', 'a'], a: 0, e: 'Any non-zero number to the power 0 is 1.', w: ['', 'Not zero.', 'Base remains.'] },
+      { q: 'What is \\(a^{-n}\\)?', o: ['\\(\\dfrac{1}{a^n}\\)', '\\(-a^n\\)', '\\(a^{1/n}\\)'], a: 0, e: 'Negative exponent means reciprocal.', w: ['', 'Does not make it negative.', 'That is a root.'] },
+      { q: 'What is \\((ab)^n\\)?', o: ['\\(a^n b^n\\)', '\\(a^n + b^n\\)', '\\(ab^n\\)'], a: 0, e: 'Power distributes over product.', w: ['', 'Not a sum.', 'Only one factor.'] }
+    ],
+    gen() {
+      for (let i = 0; i < 25; i++) {
+        const a = randInt(2, 5), m = randInt(2, 5), n = randInt(2, 4);
+        if (m === n) continue;
+        const type = pick(['mul', 'div', 'pow']);
+        if (type === 'mul') {
+          const o = uniqueOptions(`${a}^{${m + n}}`, `${a}^{${m * n}}`, `${a * a}^{${m + n}}`);
+          if (!o) continue;
+          return { q: `What is \\(${a}^{${m}} \\cdot ${a}^{${n}}\\)?`, o: o.map(x => `\\(${x}\\)`), a: 0, e: `Add exponents: ${m}+${n}=${m + n}.`, w: ['', 'Multiplied exponents.', 'Changed base.'] };
+        }
+        if (type === 'div') {
+          const o = uniqueOptions(`${a}^{${m}}`, `${a}^{${m + n}}`, `${a}^{${n}}`);
+          if (!o) continue;
+          return { q: `What is \\(\\dfrac{${a}^{${m + n}}}{${a}^{${n}}}\\)?`, o: o.map(x => `\\(${x}\\)`), a: 0, e: `Subtract: ${m + n}−${n}=${m}.`, w: ['', 'Did not subtract.', 'Wrong exponent.'] };
+        }
+        const o = uniqueOptions(`${a}^{${m * n}}`, `${a}^{${m + n}}`, `${a * n}^{${m}}`);
+        if (!o) continue;
+        return { q: `What is \\((${a}^{${m}})^{${n}}\\)?`, o: o.map(x => `\\(${x}\\)`), a: 0, e: `Multiply exponents: ${m}×${n}=${m * n}.`, w: ['', 'Added exponents.', 'Wrong base.'] };
+      }
+      return { q: 'What is \\(2^3 \\cdot 2^4\\)?', o: ['\\(2^7\\)', '\\(2^{12}\\)', '\\(4^7\\)'], a: 0, e: 'Add exponents: 3+4=7.', w: ['', 'Multiplied exponents.', 'Changed base.'] };
+    }
+  },
+
+  {
+    id: 'binom',
+    name: 'Short multiplication',
+    overview: [
+      '\\((a+b)^2 = a^2 + 2ab + b^2\\)',
+      '\\((a-b)^2 = a^2 - 2ab + b^2\\)',
+      '\\(a^2 - b^2 = (a-b)(a+b)\\)',
+      '\\((a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3\\)',
+      '\\((a-b)^3 = a^3 - 3a^2b + 3ab^2 - b^3\\)',
+      '\\(a^3 + b^3 = (a+b)(a^2 - ab + b^2)\\)',
+      '\\(a^3 - b^3 = (a-b)(a^2 + ab + b^2)\\)'
+    ],
+    formulas: [
+      { q: 'What is \\((a+b)^2\\)?', o: ['\\(a^2+2ab+b^2\\)', '\\(a^2+b^2\\)', '\\(a^2-2ab+b^2\\)'], a: 0, e: 'Square of a sum.', w: ['', 'Missing middle term.', 'That is (a−b)².'] },
+      { q: 'What is \\((a-b)^2\\)?', o: ['\\(a^2-2ab+b^2\\)', '\\(a^2+2ab+b^2\\)', '\\(a^2-b^2\\)'], a: 0, e: 'Square of a difference.', w: ['', 'That is (a+b)².', 'That is difference of squares.'] },
+      { q: 'What is \\(a^2 - b^2\\)?', o: ['\\((a-b)(a+b)\\)', '\\((a-b)^2\\)', '\\((a+b)^2\\)'], a: 0, e: 'Difference of squares.', w: ['', 'That is a square.', 'Wrong.'] },
+      { q: 'What is \\((a+b)^3\\)?', o: ['\\(a^3+3a^2b+3ab^2+b^3\\)', '\\(a^3+b^3\\)', '\\(a^3+3ab+b^3\\)'], a: 0, e: 'Cube of a sum.', w: ['', 'Missing middle terms.', 'Incomplete.'] },
+      { q: 'What is \\(a^3 + b^3\\)?', o: ['\\((a+b)(a^2-ab+b^2)\\)', '\\((a+b)^3\\)', '\\((a-b)(a^2+ab+b^2)\\)'], a: 0, e: 'Sum of cubes.', w: ['', 'That is the expansion of (a+b)³.', 'That is difference of cubes.'] },
+      { q: 'What is \\(a^3 - b^3\\)?', o: ['\\((a-b)(a^2+ab+b^2)\\)', '\\((a+b)(a^2-ab+b^2)\\)', '\\((a-b)^3\\)'], a: 0, e: 'Difference of cubes.', w: ['', 'That is sum of cubes.', 'That is a cube.'] }
+    ],
+    gen() {
+      for (let i = 0; i < 20; i++) {
+        const a = randInt(2, 7), b = randInt(1, 5);
+        if (a === b) continue;
+        const type = pick(['sum2', 'diff2', 'diffsq']);
+        if (type === 'sum2') {
+          const correct = a * a + 2 * a * b + b * b;
+          const o = uniqueOptions(correct, a * a + b * b, a * a - 2 * a * b + b * b);
+          if (!o) continue;
+          return { q: `Expand \\((${a}+${b})^2\\).`, o, a: 0, e: `a²+2ab+b² = ${correct}.`, w: ['', 'Missing 2ab.', 'Used (a−b)².'] };
+        }
+        if (type === 'diff2') {
+          const correct = a * a - 2 * a * b + b * b;
+          const o = uniqueOptions(correct, a * a + 2 * a * b + b * b, a * a - b * b);
+          if (!o) continue;
+          return { q: `Expand \\((${a}-${b})^2\\).`, o, a: 0, e: `a²−2ab+b² = ${correct}.`, w: ['', 'Used (a+b)².', 'Difference of squares.'] };
+        }
+        return {
+          q: `Factor \\(${a * a} - ${b * b}\\).`,
+          o: [`\\((${a}-${b})(${a}+${b})\\)`, `\\((${a}-${b})^2\\)`, `\\((${a}+${b})^2\\)`],
+          a: 0, e: 'Difference of squares.', w: ['', 'That is a square.', 'Wrong.']
+        };
+      }
+      return { q: 'Expand \\((3+2)^2\\).', o: ['25', '13', '5'], a: 0, e: '9+12+4=25.', w: ['', 'Missing 2ab.', 'Wrong.'] };
+    }
+  },
+
+  {
+    id: 'eq',
+    name: 'Equations',
+    overview: [
+      'Linear: \\(ax + b = c \\Rightarrow x = \\dfrac{c-b}{a}\\)',
+      'Quadratic formula: \\(x = \\dfrac{-b \\pm \\sqrt{b^2-4ac}}{2a}\\)',
+      'Discriminant: \\(D = b^2 - 4ac\\)',
+      'D > 0: two real roots; D = 0: one real root; D < 0: no real roots',
+      'Completing the square: \\(x^2 + bx = \\left(x+\\dfrac{b}{2}\\right)^2 - \\left(\\dfrac{b}{2}\\right)^2\\)'
+    ],
+    formulas: [
+      { q: 'Quadratic formula for \\(ax^2+bx+c=0\\)?', o: ['\\(\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a}\\)', '\\(\\dfrac{b\\pm\\sqrt{b^2-4ac}}{2a}\\)', '\\(\\dfrac{-b\\pm\\sqrt{b^2+4ac}}{2a}\\)'], a: 0, e: 'Standard quadratic formula.', w: ['', 'Sign of b wrong.', 'Sign under root wrong.'] },
+      { q: 'What is the discriminant D?', o: ['\\(b^2-4ac\\)', '\\(b^2+4ac\\)', '\\(-b\\pm\\sqrt{4ac}\\)'], a: 0, e: 'D = b² − 4ac.', w: ['', 'Wrong sign.', 'Not the discriminant.'] },
+      { q: 'If D > 0, the quadratic has…', o: ['two distinct real roots', 'one real root', 'no real roots'], a: 0, e: 'Positive discriminant → two real roots.', w: ['', 'That is D=0.', 'That is D<0.'] },
+      { q: 'If D = 0, the quadratic has…', o: ['exactly one real root (repeated)', 'two real roots', 'no real roots'], a: 0, e: 'Zero discriminant → repeated root.', w: ['', 'That is D>0.', 'That is D<0.'] },
+      { q: 'Solve for x: \\(ax+b=c\\)', o: ['\\(x=\\dfrac{c-b}{a}\\)', '\\(x=\\dfrac{c+b}{a}\\)', '\\(x=\\dfrac{a}{c-b}\\)'], a: 0, e: 'Isolate x.', w: ['', 'Wrong sign.', 'Inverted.'] },
+      { q: 'Completing the square: \\(x^2+bx\\) becomes?', o: ['\\(\\left(x+\\dfrac{b}{2}\\right)^2 - \\left(\\dfrac{b}{2}\\right)^2\\)', '\\(\\left(x+b\\right)^2\\)', '\\(\\left(x+\\dfrac{b}{2}\\right)^2\\)'], a: 0, e: 'Add and subtract (b/2)².', w: ['', 'Incomplete.', 'Missing the subtracted term.'] }
+    ],
+    gen() {
+      for (let i = 0; i < 25; i++) {
+        const type = pick(['lin', 'disc']);
+        if (type === 'lin') {
+          const a = randInt(2, 6), b = randInt(1, 9), c = randInt(5, 24);
+          const x = (c - b) / a;
+          if (!Number.isInteger(x)) continue;
+          const o = uniqueOptions(x, (c + b) / a, c - b);
+          if (!o) continue;
+          return { q: `Solve \\(${a}x + ${b} = ${c}\\).`, o, a: 0, e: `x = (${c}−${b})/${a} = ${x}.`, w: ['', 'Wrong sign on b.', 'Forgot to divide.'] };
+        }
+        const b = randInt(2, 9), c = randInt(1, 12);
+        const D = b * b - 4 * c;
+        const o = uniqueOptions(D, b * b + 4 * c, b * b);
+        if (!o) continue;
+        return { q: `For \\(x^2 + ${b}x + ${c} = 0\\), discriminant D = ?`, o, a: 0, e: `D = ${b}² − 4·${c} = ${D}.`, w: ['', 'Wrong sign.', 'Forgot 4ac.'] };
+      }
+      return { q: 'Solve \\(2x + 4 = 10\\).', o: ['3', '7', '6'], a: 0, e: '2x=6 → x=3.', w: ['', 'Wrong sign.', 'Forgot divide.'] };
+    }
+  },
+
+  {
+    id: 'log',
+    name: 'Logarithms',
+    overview: [
+      'Definition: \\(\\log_a b = c \\iff a^c = b\\)',
+      '\\(\\log_a a = 1\\)',
+      '\\(\\log_a 1 = 0\\)',
+      '\\(\\log_a (xy) = \\log_a x + \\log_a y\\)',
+      '\\(\\log_a \\dfrac{x}{y} = \\log_a x - \\log_a y\\)',
+      '\\(\\log_a (x^k) = k \\log_a x\\)',
+      'Change of base: \\(\\log_a b = \\dfrac{\\log_c b}{\\log_c a}\\)'
+    ],
+    formulas: [
+      { q: '\\(\\log_a b = c\\) means…', o: ['\\(a^c = b\\)', '\\(b^c = a\\)', '\\(c^a = b\\)'], a: 0, e: 'Definition of logarithm.', w: ['', 'Swapped.', 'Wrong.'] },
+      { q: 'What is \\(\\log_a a\\)?', o: ['1', '0', 'a'], a: 0, e: 'a¹ = a.', w: ['', 'That is log 1.', 'Wrong.'] },
+      { q: 'What is \\(\\log_a 1\\)?', o: ['0', '1', 'undefined'], a: 0, e: 'a⁰ = 1.', w: ['', 'That is log_a a.', 'Defined.'] },
+      { q: 'What is \\(\\log_a(xy)\\)?', o: ['\\(\\log_a x + \\log_a y\\)', '\\(\\log_a x \\cdot \\log_a y\\)', '\\(\\log_a(x+y)\\)'], a: 0, e: 'Product rule.', w: ['', 'Not multiplication of logs.', 'Wrong.'] },
+      { q: 'What is \\(\\log_a\\dfrac{x}{y}\\)?', o: ['\\(\\log_a x - \\log_a y\\)', '\\(\\dfrac{\\log_a x}{\\log_a y}\\)', '\\(\\log_a(x-y)\\)'], a: 0, e: 'Quotient rule.', w: ['', 'Not division of logs.', 'Wrong.'] },
+      { q: 'What is \\(\\log_a(x^k)\\)?', o: ['\\(k\\log_a x\\)', '\\((\\log_a x)^k\\)', '\\(\\log_a x + k\\)'], a: 0, e: 'Power rule.', w: ['', 'Log raised to k.', 'Wrong.'] },
+      { q: 'Change of base formula?', o: ['\\(\\dfrac{\\log_c b}{\\log_c a}\\)', '\\(\\log_c b \\cdot \\log_c a\\)', '\\(\\log_c(b-a)\\)'], a: 0, e: 'Standard change of base.', w: ['', 'Multiplication.', 'Wrong.'] }
+    ]
+    // no gen — pure formula topic
+  },
+
+  {
+    id: 'trig',
+    name: 'Trigonometry',
+    overview: [
+      'Ratios: \\(\\sin\\theta=\\dfrac{opp}{hyp}\\), \\(\\cos\\theta=\\dfrac{adj}{hyp}\\), \\(\\tan\\theta=\\dfrac{opp}{adj}\\)',
+      'Reciprocal: \\(\\csc=\\dfrac{1}{\\sin}\\), \\(\\sec=\\dfrac{1}{\\cos}\\), \\(\\cot=\\dfrac{1}{\\tan}\\)',
+      'Values: \\(\\sin30^\\circ=\\dfrac12\\), \\(\\cos30^\\circ=\\dfrac{\\sqrt3}{2}\\), \\(\\tan30^\\circ=\\dfrac{1}{\\sqrt3}\\)',
+      '\\(\\sin45^\\circ=\\cos45^\\circ=\\dfrac{\\sqrt2}{2}\\), \\(\\tan45^\\circ=1\\)',
+      '\\(\\sin60^\\circ=\\dfrac{\\sqrt3}{2}\\), \\(\\cos60^\\circ=\\dfrac12\\), \\(\\tan60^\\circ=\\sqrt3\\)',
+      'Complementary: \\(\\sin(90^\\circ-\\theta)=\\cos\\theta\\), \\(\\cos(90^\\circ-\\theta)=\\sin\\theta\\)',
+      'Pythagorean: \\(\\sin^2\\theta+\\cos^2\\theta=1\\)',
+      '\\(1+\\tan^2\\theta=\\sec^2\\theta\\), \\(1+\\cot^2\\theta=\\csc^2\\theta\\)',
+      'Double angle: \\(\\sin2\\theta=2\\sin\\theta\\cos\\theta\\), \\(\\cos2\\theta=\\cos^2\\theta-\\sin^2\\theta\\)',
+      'Sum: \\(\\sin(A+B)=\\sin A\\cos B+\\cos A\\sin B\\)',
+      '\\(\\cos(A+B)=\\cos A\\cos B-\\sin A\\sin B\\)'
+    ],
+    formulas: [
+      { q: 'What is \\(\\sin30^\\circ\\)?', o: ['\\(\\dfrac12\\)', '\\(\\dfrac{\\sqrt3}{2}\\)', '1'], a: 0, e: 'Standard value.', w: ['', 'sin60°.', 'sin90°.'] },
+      { q: 'What is \\(\\cos60^\\circ\\)?', o: ['\\(\\dfrac12\\)', '\\(\\dfrac{\\sqrt3}{2}\\)', '0'], a: 0, e: 'Standard value.', w: ['', 'cos30°.', 'cos90°.'] },
+      { q: 'What is \\(\\tan45^\\circ\\)?', o: ['1', '0', '\\(\\sqrt3\\)'], a: 0, e: 'Standard value.', w: ['', 'tan0°.', 'tan60°.'] },
+      { q: 'What is \\(\\sin^2\\theta + \\cos^2\\theta\\)?', o: ['1', '0', '2'], a: 0, e: 'Pythagorean identity.', w: ['', 'Not 0.', 'Not 2.'] },
+      { q: 'What is \\(\\sin(90^\\circ-\\theta)\\)?', o: ['\\(\\cos\\theta\\)', '\\(\\sin\\theta\\)', '\\(-\\cos\\theta\\)'], a: 0, e: 'Co-function identity.', w: ['', 'Same function.', 'Sign error.'] },
+      { q: 'What is \\(\\sin2\\theta\\)?', o: ['\\(2\\sin\\theta\\cos\\theta\\)', '\\(\\sin^2\\theta\\)', '\\(2\\sin\\theta\\)'], a: 0, e: 'Double-angle formula.', w: ['', 'Wrong.', 'Incomplete.'] },
+      { q: 'What is \\(\\cos2\\theta\\)?', o: ['\\(\\cos^2\\theta-\\sin^2\\theta\\)', '\\(\\cos^2\\theta+\\sin^2\\theta\\)', '\\(2\\cos\\theta\\)'], a: 0, e: 'Double-angle formula.', w: ['', 'That is 1.', 'Wrong.'] },
+      { q: 'What is \\(\\csc\\theta\\)?', o: ['\\(\\dfrac{1}{\\sin\\theta}\\)', '\\(\\dfrac{1}{\\cos\\theta}\\)', '\\(\\dfrac{1}{\\tan\\theta}\\)'], a: 0, e: 'Reciprocal of sine.', w: ['', 'That is sec.', 'That is cot.'] },
+      { q: 'What is \\(\\sec\\theta\\)?', o: ['\\(\\dfrac{1}{\\cos\\theta}\\)', '\\(\\dfrac{1}{\\sin\\theta}\\)', '\\(\\dfrac{1}{\\tan\\theta}\\)'], a: 0, e: 'Reciprocal of cosine.', w: ['', 'That is csc.', 'That is cot.'] },
+      { q: 'What is \\(1 + \\tan^2\\theta\\)?', o: ['\\(\\sec^2\\theta\\)', '\\(\\csc^2\\theta\\)', '1'], a: 0, e: 'Pythagorean identity.', w: ['', 'That is the cot version.', 'Wrong.'] },
+      { q: '\\(\\sin(A+B)\\) = ?', o: ['\\(\\sin A\\cos B + \\cos A\\sin B\\)', '\\(\\sin A\\cos B - \\cos A\\sin B\\)', '\\(\\cos A\\cos B - \\sin A\\sin B\\)'], a: 0, e: 'Angle sum formula.', w: ['', 'That is sin(A−B).', 'That is cos(A+B).'] },
+      { q: '\\(\\cos(A+B)\\) = ?', o: ['\\(\\cos A\\cos B - \\sin A\\sin B\\)', '\\(\\cos A\\cos B + \\sin A\\sin B\\)', '\\(\\sin A\\cos B + \\cos A\\sin B\\)'], a: 0, e: 'Angle sum formula.', w: ['', 'That is cos(A−B).', 'That is sin(A+B).'] },
+      { q: 'What is \\(\\tan60^\\circ\\)?', o: ['\\(\\sqrt3\\)', '1', '\\(\\dfrac{1}{\\sqrt3}\\)'], a: 0, e: 'Standard value.', w: ['', 'tan45°.', 'tan30°.'] },
+      { q: 'What is \\(\\sin45^\\circ\\)?', o: ['\\(\\dfrac{\\sqrt2}{2}\\)', '\\(\\dfrac12\\)', '1'], a: 0, e: 'Standard value.', w: ['', 'sin30°.', 'sin90°.'] }
+    ]
+  },
+
+  {
+    id: 'der',
+    name: 'Derivatives',
+    overview: [
+      '\\((x^n)\' = n x^{n-1}\\)',
+      '\\((c)\' = 0\\)',
+      '\\((f \\pm g)\' = f\' \\pm g\'\\)',
+      'Product: \\((fg)\' = f\'g + fg\'\\)',
+      'Quotient: \\(\\left(\\dfrac{f}{g}\\right)\' = \\dfrac{f\'g - fg\'}{g^2}\\)',
+      'Chain: \\((f(g(x)))\' = f\'(g(x))\\cdot g\'(x)\\)',
+      '\\((\\sin x)\' = \\cos x\\)',
+      '\\((\\cos x)\' = -\\sin x\\)',
+      '\\((\\tan x)\' = \\sec^2 x\\)',
+      '\\((\\cot x)\' = -\\csc^2 x\\)',
+      '\\((\\sec x)\' = \\sec x \\tan x\\)',
+      '\\((\\csc x)\' = -\\csc x \\cot x\\)',
+      '\\((e^x)\' = e^x\\)',
+      '\\((a^x)\' = a^x \\ln a\\)',
+      '\\((\\ln x)\' = \\dfrac{1}{x}\\)',
+      '\\((\\arcsin x)\' = \\dfrac{1}{\\sqrt{1-x^2}}\\)',
+      '\\((\\arctan x)\' = \\dfrac{1}{1+x^2}\\)'
+    ],
+    formulas: [
+      { q: '\\((x^n)\' =\\)?', o: ['\\(n x^{n-1}\\)', '\\(x^{n-1}\\)', '\\(n x^n\\)'], a: 0, e: 'Power rule.', w: ['', 'Forgot coefficient.', 'Did not lower exponent.'] },
+      { q: '\\((\\sin x)\' =\\)?', o: ['\\(\\cos x\\)', '\\(-\\cos x\\)', '\\(-\\sin x\\)'], a: 0, e: 'Standard.', w: ['', 'Minus belongs to cos.', 'That is (cos)\'.'] },
+      { q: '\\((\\cos x)\' =\\)?', o: ['\\(-\\sin x\\)', '\\(\\sin x\\)', '\\(-\\cos x\\)'], a: 0, e: 'Standard.', w: ['', 'Needs the minus.', 'Wrong.'] },
+      { q: '\\((\\tan x)\' =\\)?', o: ['\\(\\sec^2 x\\)', '\\(\\sec x\\)', '\\(-\\csc^2 x\\)'], a: 0, e: 'Standard.', w: ['', 'Missing square.', 'That is (cot)\'.'] },
+      { q: '\\((e^x)\' =\\)?', o: ['\\(e^x\\)', '\\(x e^{x-1}\\)', '\\(e\\)'], a: 0, e: 'e^x is its own derivative.', w: ['', 'Power rule does not apply.', 'Constant.'] },
+      { q: '\\((\\ln x)\' =\\)?', o: ['\\(\\dfrac{1}{x}\\)', '\\(e^x\\)', '\\(-\\dfrac{1}{x}\\)'], a: 0, e: 'Standard.', w: ['', 'Inverse function.', 'No minus.'] },
+      { q: 'Product rule \\((fg)\' =\\)?', o: ['\\(f\'g + fg\'\\)', '\\(f\'g\'\\)', '\\(f\' + g\'\\)'], a: 0, e: 'Product rule.', w: ['', 'Not the product of derivatives.', 'That is sum.'] },
+      { q: 'Quotient rule \\(\\left(\\dfrac{f}{g}\\right)\' =\\)?', o: ['\\(\\dfrac{f\'g - fg\'}{g^2}\\)', '\\(\\dfrac{f\'g + fg\'}{g^2}\\)', '\\(\\dfrac{f\'}{g\'}\\)'], a: 0, e: 'Quotient rule (minus in numerator).', w: ['', 'Wrong sign.', 'Wrong form.'] },
+      { q: '\\((\\sec x)\' =\\)?', o: ['\\(\\sec x\\tan x\\)', '\\(\\sec^2 x\\)', '\\(-\\sec x\\tan x\\)'], a: 0, e: 'Standard.', w: ['', 'That is (tan)\'.', 'Sign error.'] },
+      { q: '\\((\\cot x)\' =\\)?', o: ['\\(-\\csc^2 x\\)', '\\(\\csc^2 x\\)', '\\(-\\sec^2 x\\)'], a: 0, e: 'Standard.', w: ['', 'Missing minus.', 'Wrong function.'] },
+      { q: '\\((a^x)\' =\\)?', o: ['\\(a^x \\ln a\\)', '\\(x a^{x-1}\\)', '\\(a^x\\)'], a: 0, e: 'Exponential with base a.', w: ['', 'Power rule misuse.', 'Missing ln a.'] },
+      { q: '\\((\\arcsin x)\' =\\)?', o: ['\\(\\dfrac{1}{\\sqrt{1-x^2}}\\)', '\\(\\dfrac{1}{1+x^2}\\)', '\\(\\dfrac{-1}{\\sqrt{1-x^2}}\\)'], a: 0, e: 'Standard inverse trig.', w: ['', 'That is arctan.', 'Sign error.'] },
+      { q: '\\((\\arctan x)\' =\\)?', o: ['\\(\\dfrac{1}{1+x^2}\\)', '\\(\\dfrac{1}{\\sqrt{1-x^2}}\\)', '\\(\\dfrac{-1}{1+x^2}\\)'], a: 0, e: 'Standard.', w: ['', 'That is arcsin.', 'Sign error.'] },
+      { q: 'Derivative of a constant?', o: ['0', 'the constant', '1'], a: 0, e: 'Constant rule.', w: ['', 'Slope is zero.', 'Wrong.'] },
+      { q: 'Chain rule: \\((f(g(x)))\' =\\)?', o: ['\\(f\'(g(x))\\cdot g\'(x)\\)', '\\(f\'(x)\\cdot g\'(x)\\)', '\\(f(g\'(x))\\)'], a: 0, e: 'Derivative of outside × derivative of inside.', w: ['', 'Wrong argument.', 'Wrong.'] }
+    ]
+  },
+
+  {
+    id: 'int',
+    name: 'Integrals',
+    overview: [
+      '\\(\\int x^n \\,dx = \\dfrac{x^{n+1}}{n+1} + C\\) (n ≠ −1)',
+      '\\(\\int \\dfrac{1}{x}\\,dx = \\ln|x| + C\\)',
+      '\\(\\int e^x\\,dx = e^x + C\\)',
+      '\\(\\int a^x\\,dx = \\dfrac{a^x}{\\ln a} + C\\)',
+      '\\(\\int \\sin x\\,dx = -\\cos x + C\\)',
+      '\\(\\int \\cos x\\,dx = \\sin x + C\\)',
+      '\\(\\int \\sec^2 x\\,dx = \\tan x + C\\)',
+      '\\(\\int \\csc^2 x\\,dx = -\\cot x + C\\)',
+      '\\(\\int \\sec x\\tan x\\,dx = \\sec x + C\\)',
+      '\\(\\int \\dfrac{1}{\\sqrt{1-x^2}}\\,dx = \\arcsin x + C\\)',
+      '\\(\\int \\dfrac{1}{1+x^2}\\,dx = \\arctan x + C\\)',
+      'Definite: \\(\\int_a^b f(x)\\,dx = F(b) - F(a)\\)'
+    ],
+    formulas: [
+      { q: '\\(\\int x^n\\,dx\\) (n≠−1) = ?', o: ['\\(\\dfrac{x^{n+1}}{n+1}+C\\)', '\\(n x^{n-1}+C\\)', '\\(x^{n+1}+C\\)'], a: 0, e: 'Power rule for integrals.', w: ['', 'That is the derivative.', 'Forgot to divide.'] },
+      { q: '\\(\\int \\dfrac{1}{x}\\,dx =\\)?', o: ['\\(\\ln|x|+C\\)', '\\(-\\dfrac{1}{x^2}+C\\)', '\\(x^{-1}+C\\)'], a: 0, e: 'Standard (power rule fails at −1).', w: ['', 'That is the derivative of 1/x.', 'Wrong.'] },
+      { q: '\\(\\int e^x\\,dx =\\)?', o: ['\\(e^x+C\\)', '\\(x e^{x-1}+C\\)', '\\(e+C\\)'], a: 0, e: 'e^x is its own antiderivative.', w: ['', 'Power rule misuse.', 'Constant.'] },
+      { q: '\\(\\int \\sin x\\,dx =\\)?', o: ['\\(-\\cos x+C\\)', '\\(\\cos x+C\\)', '\\(-\\sin x+C\\)'], a: 0, e: 'Antiderivative of sin is −cos.', w: ['', 'Missing minus.', 'Wrong.'] },
+      { q: '\\(\\int \\cos x\\,dx =\\)?', o: ['\\(\\sin x+C\\)', '\\(-\\sin x+C\\)', '\\(\\cos x+C\\)'], a: 0, e: 'Antiderivative of cos is sin.', w: ['', 'Minus is for sin.', 'Wrong.'] },
+      { q: '\\(\\int \\sec^2 x\\,dx =\\)?', o: ['\\(\\tan x+C\\)', '\\(\\sec x+C\\)', '\\(-\\cot x+C\\)'], a: 0, e: 'Derivative of tan is sec².', w: ['', 'Wrong function.', 'Wrong.'] },
+      { q: '\\(\\int \\dfrac{1}{1+x^2}\\,dx =\\)?', o: ['\\(\\arctan x+C\\)', '\\(\\arcsin x+C\\)', '\\(\\ln|1+x^2|+C\\)'], a: 0, e: 'Standard inverse trig integral.', w: ['', 'That is arcsin.', 'Wrong form.'] },
+      { q: '\\(\\int \\dfrac{1}{\\sqrt{1-x^2}}\\,dx =\\)?', o: ['\\(\\arcsin x+C\\)', '\\(\\arctan x+C\\)', '\\(\\ln|\\sqrt{1-x^2}|+C\\)'], a: 0, e: 'Standard.', w: ['', 'That is arctan.', 'Wrong.'] },
+      { q: 'Definite integral \\(\\int_a^b f\\,dx =\\)?', o: ['\\(F(b)-F(a)\\)', '\\(F(a)-F(b)\\)', '\\(F(b)+F(a)\\)'], a: 0, e: 'Fundamental theorem of calculus.', w: ['', 'Order reversed.', 'Wrong.'] },
+      { q: '\\(\\int a^x\\,dx =\\)?', o: ['\\(\\dfrac{a^x}{\\ln a}+C\\)', '\\(a^x\\ln a+C\\)', '\\(x a^{x-1}+C\\)'], a: 0, e: 'Standard.', w: ['', 'That is the derivative.', 'Power misuse.'] },
+      { q: '\\(\\int \\csc^2 x\\,dx =\\)?', o: ['\\(-\\cot x+C\\)', '\\(\\cot x+C\\)', '\\(-\\tan x+C\\)'], a: 0, e: 'Derivative of cot is −csc².', w: ['', 'Missing minus.', 'Wrong function.'] },
+      { q: '\\(\\int \\sec x\\tan x\\,dx =\\)?', o: ['\\(\\sec x+C\\)', '\\(\\tan x+C\\)', '\\(-\\sec x+C\\)'], a: 0, e: 'Derivative of sec is sec tan.', w: ['', 'Wrong.', 'Sign error.'] }
+    ]
+  }
+];
+
+const byId = id => TOPICS.find(t => t.id === id);
+const ALL = TOPICS;
+
+/* ---------- Session building: FORMULAS FIRST, then instances ---------- */
+function buildSession(scope) {
+  const pool = scope === 'all' ? ALL : [byId(scope.slice(6))];
+  const formulaItems = [];
+  const instanceItems = [];
+
+  pool.forEach(t => {
+    // Phase 1: every abstract formula question
+    t.formulas.forEach((q, i) => {
+      formulaItems.push({ topic: t.id, i, phase: 'formula', key: `${t.id}-f-${i}` });
+    });
+    // Phase 2: one instance per formula (if topic has a generator)
+    if (typeof t.gen === 'function') {
+      t.formulas.forEach((_, i) => {
+        instanceItems.push({ topic: t.id, i, phase: 'instance', key: `${t.id}-i-${i}` });
+      });
+    }
+  });
+
+  // Formulas first (shuffled within phase), then instances (shuffled within phase)
+  return shuffle(formulaItems).concat(shuffle(instanceItems));
+}
+
+function getQuestion(it) {
+  const t = byId(it.topic);
+  if (it.phase === 'instance' && typeof t.gen === 'function') {
+    return t.gen();
+  }
+  return t.formulas[it.i];
+}
+
+function unresolvedKeys() {
+  const all = loadAttempts();
+  const u = new Set();
+  all.forEach((a, i) => {
+    if (!a.correct && !all.some((b, j) => j > i && b.correct && b.topic === a.topic && b.q === a.q)) {
+      u.add(a.topic + '|' + a.q);
+    }
+  });
+  return u;
+}
+
+function dueTopics() {
+  const st = loadState();
+  return ALL.filter(t => st[t.id] && st[t.id].due <= Date.now());
+}
+
+/* ---------- UI: panel fade ---------- */
+function setPanel(on) {
+  $('phone').classList.toggle('panel', on);
+}
+
+/* ---------- Dropdown ---------- */
+let currentScope = 'all';
+function buildDropdown() {
+  const menu = $('dd-menu');
+  let html = `<button type="button" class="dd-item ${currentScope === 'all' ? 'active' : ''}" data-val="all">All topics</button>`;
+  html += `<div class="dd-group"><div class="dd-group-label">Formula groups</div>`;
+  ALL.forEach(t => {
+    html += `<button type="button" class="dd-item ${currentScope === ('topic:' + t.id) ? 'active' : ''}" data-val="topic:${t.id}">${t.name}</button>`;
+  });
+  html += `</div>`;
+  menu.innerHTML = html;
+  menu.querySelectorAll('.dd-item').forEach(btn => {
+    btn.onclick = () => {
+      currentScope = btn.dataset.val;
+      $('dd-toggle').textContent = btn.textContent;
+      menu.querySelectorAll('.dd-item').forEach(b => b.classList.toggle('active', b.dataset.val === currentScope));
+      $('scope-dd').classList.remove('open');
+      $('dd-toggle').setAttribute('aria-expanded', 'false');
+      updateMeta();
+      wr(STORAGE.scope, currentScope);
+    };
+  });
+}
+$('dd-toggle').onclick = e => {
+  e.stopPropagation();
+  const open = $('scope-dd').classList.toggle('open');
+  $('dd-toggle').setAttribute('aria-expanded', open);
+};
+document.addEventListener('click', () => {
+  $('scope-dd').classList.remove('open');
+  $('dd-toggle').setAttribute('aria-expanded', 'false');
+});
+
+/* ---------- Screens ---------- */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    const on = s.id === id;
+    s.classList.toggle('on', on);
+    if (on) s.scrollTop = 0;
+  });
+  // Dark panel only for gameplay screens
+  setPanel(id !== 'home');
+}
+
+function showHome() {
+  const saved = rd(STORAGE.scope, 'all');
+  currentScope = saved;
+  buildDropdown();
+  const label = [...$('dd-menu').querySelectorAll('.dd-item')].find(b => b.dataset.val === saved);
+  if (label) $('dd-toggle').textContent = label.textContent;
+  updateMeta();
+  show('home');
+  if (!coarse()) $('start').focus({ preventScroll: true });
+}
+
+function updateMeta() {
+  const items = buildSession(currentScope);
+  const formulas = items.filter(x => x.phase === 'formula').length;
+  const instances = items.filter(x => x.phase === 'instance').length;
+  const due = dueTopics();
+  let text = `${formulas} formulas`;
+  if (instances) text += ` + ${instances} practice`;
+  if (due.length) text += ` · due: ${due.slice(0, 3).map(t => t.name).join(', ')}`;
+  $('meta').textContent = text;
+}
+
+$('start').onclick = () => startSession('main', currentScope, buildSession(currentScope));
+$('learnbtn').onclick = () => startLearn(currentScope);
+$('reset').onclick = () => {
+  if (confirm('Delete all practice results?')) {
+    try { [STORAGE.attempts, STORAGE.state].forEach(k => localStorage.removeItem(k)); } catch {}
+    updateMeta();
+  }
+};
+
+let learnScope = 'all';
+function startLearn(scope) {
+  learnScope = scope;
+  const name = scope === 'all' ? 'all topics' : byId(scope.slice(6)).name;
+  $('learn-h').textContent = 'Formulas · ' + name;
+  const list = scope === 'all' ? ALL : [byId(scope.slice(6))];
+  const el = $('learnlist');
+  el.classList.remove('math-ready');
+  el.innerHTML = list.map(t =>
+    `<section class="lcard"><h3>${t.name}</h3><ul>${t.overview.map(x => `<li>${x}</li>`).join('')}</ul></section>`
+  ).join('');
+  show('learn');
+  renderMath(el);
+}
+$('learnback').onclick = showHome;
+$('learnstart').onclick = () => startSession('main', learnScope, buildSession(learnScope));
+
+/* ---------- Session + timer ---------- */
+let S = null;
+let timerId = null;
+let timeLeft = TIME_LIMIT;
+
+function clearTimer() {
+  if (timerId) { clearInterval(timerId); timerId = null; }
+  const el = $('timer');
+  if (el) {
+    el.textContent = TIME_LIMIT;
+    el.classList.remove('warn', 'crit');
+  }
+}
+
+function startTimer() {
+  clearTimer();
+  timeLeft = TIME_LIMIT;
+  const el = $('timer');
+  if (el) {
+    el.textContent = timeLeft;
+    el.classList.remove('warn', 'crit');
+  }
+  timerId = setInterval(() => {
+    timeLeft--;
+    if (el) {
+      el.textContent = Math.max(0, timeLeft);
+      el.classList.toggle('warn', timeLeft <= 8 && timeLeft > 3);
+      el.classList.toggle('crit', timeLeft <= 3);
+    }
+    if (timeLeft <= 0) {
+      clearTimer();
+      timeoutAnswer();
+    }
+  }, 1000);
+}
+
+function timeoutAnswer() {
+  if (!S || S.answered) return;
+  const it = S.queue[S.idx];
+  const q = getQuestion(it);
+  S.answered = true;
+  const key = it.key;
+  const first = !(key in S.tried);
+  if (first) {
+    S.tried[key] = false;
+    if (S.kind !== 'retry') S.queue.push({ ...it, retry: true });
+  }
+  saveAttempt({ topic: it.topic, q: it.i, phase: it.phase, chosen: -1, correct: false, first, at: new Date().toISOString(), run: S.run, timeout: true });
+  S.log.push({ topic: it.topic, i: it.i, phase: it.phase, chosen: -1, correct: false, first, timeout: true, q });
+  document.querySelectorAll('.option').forEach(o => {
+    o.disabled = true;
+    const m = o.querySelector('.mark');
+    if (Number(o.dataset.k) === q.a) {
+      o.classList.add('correct');
+      m.textContent = '✓';
+    }
+  });
+  $('fb').textContent = 'Time’s up. ' + q.e;
+  $('next').classList.add('show');
+  if (!coarse()) $('next').focus({ preventScroll: true });
+}
+
+function startSession(kind, scope, items) {
+  if (!items.length) { showHome(); return; }
+  S = {
+    kind, scope,
+    queue: items.map(x => ({ ...x })),
+    idx: 0,
+    run: Date.now(),
+    t0: Date.now(),
+    tried: {},
+    log: [],
+    answered: false
+  };
+  show('session');
+  renderQ();
+}
+
+function setBar() {
+  const p = Math.round(S.idx / S.queue.length * 100);
+  const b = $('bar');
+  b.firstElementChild.style.width = p + '%';
+  b.setAttribute('aria-valuenow', p);
+}
+
+function renderQ() {
+  clearTimer();
+  const it = S.queue[S.idx];
+  const q = getQuestion(it);
+  it._q = q;
+  const order = shuffle([0, 1, 2]);
+  S.answered = false;
+  setBar();
+
+  // Hide BEFORE injecting raw TeX so the flash never paints
+  const body = $('sbody');
+  body.classList.remove('math-ready');
+
+  const phaseLabel = it.phase === 'formula' ? 'Formula' : 'Practice';
+  body.innerHTML = `
+    <p class="phase-tag">${phaseLabel}</p>
+    <p class="question" id="qtext">${q.q}</p>
+    <div class="options" role="group" aria-labelledby="qtext">
+      ${order.map(k => `<button type="button" class="option" data-k="${k}"><span>${q.o[k]}</span><span class="mark" aria-hidden="true"></span></button>`).join('')}
+    </div>
+    <p class="fbline" id="fb" aria-live="polite"></p>
+    <button type="button" class="btn" id="next">${S.idx + 1 < S.queue.length ? 'Next' : 'Finish'}</button>`;
+
+  document.querySelectorAll('.option').forEach(b => {
+    b.onclick = () => answer(b, it, q);
+  });
+  $('next').onclick = next;
+  $('session').scrollTop = 0;
+
+  renderMath(body, () => startTimer());
+}
+
+function answer(btn, it, q) {
+  if (S.answered) return;
+  clearTimer();
+  S.answered = true;
+  const k = Number(btn.dataset.k);
+  const ok = k === q.a;
+  const key = it.key;
+  const first = !(key in S.tried);
+  if (first) {
+    S.tried[key] = ok;
+    if (!ok && S.kind !== 'retry') S.queue.push({ ...it, retry: true });
+  }
+  saveAttempt({ topic: it.topic, q: it.i, phase: it.phase, chosen: k, correct: ok, first, at: new Date().toISOString(), run: S.run });
+  S.log.push({ topic: it.topic, i: it.i, phase: it.phase, chosen: k, correct: ok, first, q });
+
+  document.querySelectorAll('.option').forEach(o => {
+    o.disabled = true;
+    const m = o.querySelector('.mark');
+    const isC = Number(o.dataset.k) === q.a;
+    if (isC) { o.classList.add('correct'); m.textContent = '✓'; }
+    else if (o === btn) { o.classList.add('wrong'); m.textContent = '✗'; }
+  });
+  $('fb').textContent = ok ? '' : q.e;
+  $('next').classList.add('show');
+  if (!coarse()) $('next').focus({ preventScroll: true });
+}
+
+function next() {
+  if (!S.answered) return;
+  clearTimer();
+  S.idx++;
+  if (S.idx >= S.queue.length) endSession();
+  else renderQ();
+}
+
+$('end').onclick = () => { clearTimer(); endSession(); };
+
+/* touch / keyboard */
+let tx = 0, ty = 0;
+$('session').addEventListener('touchstart', e => {
+  tx = e.touches[0].clientX;
+  ty = e.touches[0].clientY;
+}, { passive: true });
+$('session').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (S && S.answered && (dy < -60 || dx < -60)) next();
+}, { passive: true });
+
+document.addEventListener('keydown', e => {
+  if (!$('session').classList.contains('on') || !S) return;
+  if (e.key === 'Escape') { clearTimer(); endSession(); return; }
+  if (/^[1-3]$/.test(e.key) && !S.answered) {
+    const o = document.querySelectorAll('.option:not(:disabled)')[Number(e.key) - 1];
+    if (o) o.click();
+  } else if ((e.key === 'Enter' || e.key === 'ArrowDown') && S.answered && document.activeElement.id !== 'next') {
+    e.preventDefault();
+    next();
+  }
+});
+
+function mmss(ms) {
+  const s = Math.round(ms / 1000);
+  return Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s';
+}
+
+function endSession() {
+  clearTimer();
+  const log = S.log;
+  const firsts = log.filter(x => x.first);
+  if (!firsts.length) { showHome(); return; }
+
+  const right = firsts.filter(x => x.correct).length;
+  const missed = firsts.filter(x => !x.correct);
+  const byTopic = {};
+  firsts.forEach(x => { (byTopic[x.topic] = byTopic[x.topic] || []).push(x); });
+
+  const sched = {};
+  Object.entries(byTopic).forEach(([id, a]) => {
+    if (S.kind !== 'retry') sched[id] = updateSchedule(id, a.every(x => x.correct));
+  });
+
+  const unres = unresolvedKeys();
+  const nextMiss = [...new Set(missed.map(m => m.topic + '|' + m.i))]
+    .filter(k => unres.has(k))
+    .slice(0, 10)
+    .map(k => {
+      const [t, i] = k.split('|');
+      return { topic: t, i: Number(i), phase: 'formula', key: `${t}-f-${i}` };
+    });
+
+  let h = `<div><h2 id="review-h">${S.kind === 'retry' ? 'Mistakes round' : 'Session complete'}</h2>
+    <p class="score">${right}/${firsts.length}<small>first try</small></p>
+    <p class="sub">${mmss(Date.now() - S.t0)}</p></div>`;
+
+  if (!missed.length) {
+    h += `<div class="clean">No mistakes — solid recall.</div>`;
+  } else {
+    h += `<div class="sec"><h3>Review now (${missed.length})</h3>`;
+    missed.forEach(m => {
+      const q = m.q || getQuestion({ topic: m.topic, i: m.i, phase: m.phase || 'formula' });
+      const fixed = S.log.some(x => !x.first && x.topic === m.topic && x.i === m.i && x.correct);
+      const chosenText = m.timeout ? 'Time ran out' : (q.o[m.chosen] || '?');
+      const slip = m.timeout ? 'Ran out of time' : (q.w && q.w[m.chosen] ? q.w[m.chosen] : '');
+      h += `<details class="miss"><summary><span class="q">${q.q}</span><span class="a">Answer: ${q.o[q.a]}${fixed ? ' · fixed on second try' : ''}</span></summary>
+        <div class="why"><span><b>You chose:</b> ${chosenText}</span><span><b>Likely slip:</b> ${slip}</span><span><b>Method:</b> ${q.e}</span></div></details>`;
+    });
+    h += `</div>`;
+  }
+
+  h += `<div class="sec"><h3>By topic</h3><table><thead><tr><th>Topic</th><th>First try</th><th>Next review</th></tr></thead><tbody>`;
+  Object.entries(byTopic).forEach(([id, a]) => {
+    h += `<tr><td>${byId(id).name}</td><td>${a.filter(x => x.correct).length}/${a.length}</td><td>${sched[id] ? `box ${sched[id].box} · ${inDays(sched[id].due)}` : '–'}</td></tr>`;
+  });
+  h += `</tbody></table></div>`;
+
+  h += `<div class="actions">${nextMiss.length ? `<button type="button" class="btn" id="rmist">Practise my mistakes (${nextMiss.length})</button>` : ''}
+    <button type="button" class="btn ${nextMiss.length ? 'secondary' : ''}" id="rnew">New session</button>
+    <button type="button" class="link" id="rhome">Home</button></div>`;
+
+  const rev = $('review');
+  rev.classList.remove('math-ready');
+  rev.innerHTML = h;
+  show('review');
+  renderMath(rev);
+
+  if ($('rmist')) $('rmist').onclick = () => startSession('retry', S.scope, shuffle(nextMiss));
+  $('rnew').onclick = () => startSession('main', S.scope, buildSession(S.scope));
+  $('rhome').onclick = showHome;
+  if (!coarse()) ($('rmist') || $('rnew')).focus({ preventScroll: true });
+}
+
+showHome();
+</script>
+</body>
+</html>
