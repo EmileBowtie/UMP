@@ -825,17 +825,17 @@ function generatedPractice(topic,i){
  const q=(s,v,w1,w2,e)=>({q:s,o:[String(v),String(w1),String(w2)],a:0,e:e,w:['','Проверьте подстановку.','Проверьте вычисления.']});
  switch(topic){
  case 'sqrt':
-  if(i===0)return q('Simplify \\(\\\\sqrt{'+a*a+'\\\\cdot'+b*b+'}\\).',a*b,a*b+1,a*b-1,'Take the square roots of both factors.');
-  if(i===1)return q('Evaluate \\(\\\\sqrt{'+a*a+'/'+b*b+'}\\).',a+'/'+b,(a+1)+'/'+b,a+'/'+(b+1),'Take the square root of numerator and denominator.');
-  if(i===2)return q('Evaluate \\(\\\\sqrt{(-'+a+')^2}\\).',a,a+1,-a,'The principal square root is non-negative.');
-  return q('Evaluate \\((\\\\sqrt{'+a*a+'})^2\\).',a*a,a*a+1,a,'Squaring the root returns the radicand.');
+  if(i===0)return q('Simplify \\(\\sqrt{'+a*a+'\\cdot'+b*b+'}\\).',a*b,a*b+1,a*b-1,'Take the square roots of both factors.');
+  if(i===1)return q('Evaluate \\(\\sqrt{'+a*a+'/'+b*b+'}\\).',a+'/'+b,(a+1)+'/'+b,a+'/'+(b+1),'Take the square root of numerator and denominator.');
+  if(i===2)return q('Evaluate \\(\\sqrt{(-'+a+')^2}\\).',a,a+1,-a,'The principal square root is non-negative.');
+  return q('Evaluate \\((\\sqrt{'+a*a+'})^2\\).',a*a,a*a+1,a,'Squaring the root returns the radicand.');
  case 'pow':
-  if(i===0)return q('Simplify \\(2^'+a+'\\\\cdot2^'+b+'\\).','2^'+(a+b),'2^'+(a*b),'2^'+(a-b),'Add exponents.');
+  if(i===0)return q('Simplify \\(2^'+a+'\\cdot2^'+b+'\\).','2^'+(a+b),'2^'+(a*b),'2^'+(a-b),'Add exponents.');
   if(i===1)return q('Simplify \\(3^'+(a+b)+'/3^'+b+'\\).','3^'+a,'3^'+(a+b),'3^'+b,'Subtract exponents.');
   if(i===2)return q('Simplify \\((2^'+a+')^'+b+'\\).','2^'+(a*b),'2^'+(a+b),'2^'+a,'Multiply exponents.');
   if(i===3)return q('Evaluate \\('+a+'^0\\).',1,0,a,'Any non-zero number to power zero is 1.');
   if(i===4)return q('Evaluate \\(2^{-'+a+'}\\).','1/'+(2**a),'-'+(2**a),'1/2','A negative exponent means reciprocal.');
-  return q('Evaluate \\((2\\\\cdot3)^'+a+'\\).',6**a,2**a+3**a,6*a,'Apply the power to both factors.');
+  return q('Evaluate \\((2\\cdot3)^'+a+'\\).',6**a,2**a+3**a,6*a,'Apply the power to both factors.');
  case 'binom':
   if(i===0)return q('Evaluate \\(('+a+'+'+b+')^2\\).',(a+b)**2,a*a+b*b,(a-b)**2,'Use the square-of-a-sum formula.');
   if(i===1)return q('Evaluate \\(('+a+'-'+b+')^2\\).',(a-b)**2,a*a+b*b,(a+b)**2,'Use the square-of-a-difference formula.');
@@ -850,13 +850,13 @@ function generatedPractice(topic,i){
   if(i===4)return q('Solve \\('+a+'x+'+b+'='+(a*x+b)+'\\).',x,x+1,x-1,'Subtract b, then divide by a.');
   return q('Complete the square in \\(x^2+'+(2*a)+'x\\). What constant is subtracted?',a*a,a,2*a+1,'Subtract (b/2)².');
  case 'log':
-  if(i===0)return q('If \\(\\\\log_2 '+(2**n)+'=c\\), find c.',n,n+1,n-1,'2 to the power '+n+' equals '+(2**n)+'.');
-  if(i===1)return q('Evaluate \\(\\\\log_'+a+' '+a+'\\).',1,0,a,'The logarithm of its base is 1.');
-  if(i===2)return q('Evaluate \\(\\\\log_'+a+' 1\\).',0,1,a,'a to power zero is 1.');
-  if(i===3)return q('Evaluate \\(\\\\log_2(2^'+a+'\\\\cdot2^'+b+')\\).',a+b,a*b,a-b,'The product rule adds logarithms.');
-  if(i===4)return q('Evaluate \\(\\\\log_2(2^'+a+'/2^'+b+')\\).',a-b,a+b,a*b,'The quotient rule subtracts logarithms.');
-  if(i===5)return q('Evaluate \\(\\\\log_2((2^'+a+')^'+b+')\\).',a*b,a+b,a-b,'Move the exponent in front.');
-  return q('Evaluate \\(\\\\log_2 '+(2**n)+'\\).',n,n+1,1,'2 to the power '+n+' equals '+(2**n)+'.');
+  if(i===0)return q('If \\(\\log_2 '+(2**n)+'=c\\), find c.',n,n+1,n-1,'2 to the power '+n+' equals '+(2**n)+'.');
+  if(i===1)return q('Evaluate \\(\\log_'+a+' '+a+'\\).',1,0,a,'The logarithm of its base is 1.');
+  if(i===2)return q('Evaluate \\(\\log_'+a+' 1\\).',0,1,a,'a to power zero is 1.');
+  if(i===3)return q('Evaluate \\(\\log_2(2^'+a+'\\cdot2^'+b+')\\).',a+b,a*b,a-b,'The product rule adds logarithms.');
+  if(i===4)return q('Evaluate \\(\\log_2(2^'+a+'/2^'+b+')\\).',a-b,a+b,a*b,'The quotient rule subtracts logarithms.');
+  if(i===5)return q('Evaluate \\(\\log_2((2^'+a+')^'+b+')\\).',a*b,a+b,a-b,'Move the exponent in front.');
+  return q('Evaluate \\(\\log_2 '+(2**n)+'\\).',n,n+1,1,'2 to the power '+n+' equals '+(2**n)+'.');
  case 'trig':
   if(i===0)return q('Evaluate sin 30°.','1/2','√3/2',1,'Standard trigonometric value.');
   if(i===1)return q('Evaluate cos 60°.','1/2','√3/2',0,'Standard trigonometric value.');
@@ -929,12 +929,10 @@ function buildSession(scope) {
     t.formulas.forEach((q, i) => {
       formulaItems.push({ topic: t.id, i, phase: 'formula', key: `${t.id}-f-${i}` });
     });
-    // Phase 2: one instance per formula (if topic has a generator)
-    if (true) {
-      t.formulas.forEach((_, i) => {
-        instanceItems.push({ topic: t.id, i, phase: 'instance', key: `${t.id}-i-${i}` });
-      });
-    }
+    // Phase 2: one randomized numeric substitution task per formula
+    t.formulas.forEach((_, i) => {
+      instanceItems.push({ topic: t.id, i, phase: 'instance', key: `${t.id}-i-${i}` });
+    });
   });
 
   // Formulas first (shuffled within phase), then instances (shuffled within phase)
