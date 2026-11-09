@@ -126,7 +126,9 @@
     align-items: center; justify-content: center;
     padding: 24px; overflow: hidden;
   }
-  #home .home-in, #home .home-foot {
+  #home .home-in, #home .home-foot { opacity: 0; }
+  #home.home-fade-started .home-in,
+  #home.home-fade-started .home-foot {
     animation: home-fade-in 0.8s ease-out both;
   }
   @keyframes home-fade-in {
@@ -134,7 +136,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
   @media (prefers-reduced-motion: reduce) {
-    #home .home-in, #home .home-foot { animation: none; }
+    #home .home-in, #home .home-foot { opacity: 1; animation: none; }
   }
   .home-in {
     position: relative; z-index: 1;
@@ -1386,6 +1388,10 @@ function applyLanguage() {
 }
 document.documentElement.lang = currentLanguage;
 applyLanguage();
+// Start the entrance animation after localization and initial layout are complete.
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  $('home').classList.add('home-fade-started');
+}));
 </script>
 </body>
 </html>
