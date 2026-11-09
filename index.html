@@ -943,8 +943,8 @@ function buildSession(scope) {
 
 function getQuestion(it) {
   const t = byId(it.topic);
-  if (it.phase === 'instance' && typeof t.gen === 'function') {
-    return generatedPractice(it.topic,it.i) || t.gen();
+  if (it.phase === 'instance') {
+    return generatedPractice(it.topic,it.i) || (typeof t.gen === 'function' ? t.gen() : t.formulas[it.i]);
   }
   return t.formulas[it.i];
 }
