@@ -50,9 +50,9 @@
   }
   /* Slow, eased back-and-forth motion avoids a visible reset at the loop point. */
   .organic-bg .layer { animation: drift-smooth ease-in-out infinite alternate; will-change: transform; }
-  .organic-bg .layer.a { animation-duration: 23.75s; opacity: 0.85; }
-  .organic-bg .layer.b { animation-duration: 31.25s; opacity: 0.7; }
-  .organic-bg .layer.c { animation-duration: 38.75s; opacity: 0.55; }
+  .organic-bg .layer.a { animation-duration: 15.83s; opacity: 0.85; }
+  .organic-bg .layer.b { animation-duration: 20.83s; opacity: 0.7; }
+  .organic-bg .layer.c { animation-duration: 25.83s; opacity: 0.55; }
   @keyframes drift-smooth {
     from { transform: translate3d(0, 0, 0); }
     to   { transform: translate3d(-7%, 0, 0); }
@@ -73,7 +73,7 @@
     overflow: hidden;
     /* transparent by default — no black bar on home */
     background: transparent;
-    transition: background 0.45s ease;
+    transition: none;
   }
   .phone.panel {
     background: rgba(5, 4, 10, 0.88);
@@ -125,6 +125,16 @@
     background: transparent;
     align-items: center; justify-content: center;
     padding: 24px; overflow: hidden;
+  }
+  #home .home-in, #home .home-foot {
+    animation: home-fade-in 0.8s ease-out both;
+  }
+  @keyframes home-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #home .home-in, #home .home-foot { animation: none; }
   }
   .home-in {
     position: relative; z-index: 1;
