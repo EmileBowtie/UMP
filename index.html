@@ -1059,6 +1059,7 @@ function startLearn(scope) {
   show('learn');
   renderMath(el);
 }
+$('learnback').textContent = currentLanguage==='ru'?'← Назад':'← Back';
 $('learnback').onclick = showHome;
 $('learnstart').onclick = () => startSession('main', learnScope, buildSession(learnScope));
 
@@ -1282,20 +1283,20 @@ function endSession() {
       const q = m.q || getQuestion({ topic: m.topic, i: m.i, phase: m.phase || 'formula' });
       const fixed = S.log.some(x => !x.first && x.topic === m.topic && x.i === m.i && x.correct);
       const chosenText = m.timeout ? 'Time ran out' : (q.o[m.chosen] || '?');
-      const slip = m.timeout ? 'Ran out of time' : (q.w && q.w[m.chosen] ? q.w[m.chosen] : '');
-      h += `<details class="miss"><summary><span class="q">${q.q}</span><span class="a">Answer: ${q.o[q.a]}${fixed ? ' · fixed on second try' : ''}</span></summary>
-        <div class="why"><span><b>${T("chose")}</b> ${chosenText}</span><span><b>${T("slip")}</b> ${slip}</span><span><b>${T("method")}</b> ${q.e}</span></div></details>`;
+      const slip = m.timeout ? (currentLanguage==='ru'?'Время истекло':'Ran out of time') : localize(q.w && q.w[m.chosen] ? q.w[m.chosen] : '');
+      h += `<details class="miss"><summary><span class="q">${localize(q.q)}</span><span class="a">${currentLanguage==='ru'?'Ответ: ':'Answer: '}${localize(q.o[q.a])}${fixed ? ' · fixed on second try' : ''}</span></summary>
+        <div class="why"><span><b>${T("chose")}</b> ${chosenText}</span><span><b>${T("slip")}</b> ${slip}</span><span><b>${T("method")}</b> ${localize(q.e)}</span></div></details>`;
     });
     h += `</div>`;
   }
 
   h += `<div class="sec"><h3>${T("byTopic")}</h3><table><thead><tr><th>${T("topic")}</th><th>${T("first")}</th><th>${T("nextReview")}</th></tr></thead><tbody>`;
   Object.entries(byTopic).forEach(([id, a]) => {
-    h += `<tr><td>${byId(id).name}</td><td>${a.filter(x => x.correct).length}/${a.length}</td><td>${sched[id] ? `box ${sched[id].box} · ${inDays(sched[id].due)}` : '–'}</td></tr>`;
+    h += `<tr><td>${currentLanguage==='ru'?TOPIC_RU[id]:byId(id).name}</td><td>${a.filter(x => x.correct).length}/${a.length}</td><td>${sched[id] ? `box ${sched[id].box} · ${inDays(sched[id].due)}` : '–'}</td></tr>`;
   });
   h += `</tbody></table></div>`;
 
-  h += `<div class="actions">${nextMiss.length ? `<button type="button" class="btn" id="rmist">Practise my mistakes (${nextMiss.length})</button>` : ''}
+  h += `<div class="actions">${nextMiss.length ? `<button type="button" class="btn" id="rmist">${currentLanguage==='ru'?'Повторить ошибки':'Practise my mistakes'} (${nextMiss.length})</button>` : ''}
     <button type="button" class="btn ${nextMiss.length ? 'secondary' : ''}" id="rnew">${T("new")}</button>
     <button type="button" class="link" id="rhome">${T("home")}</button></div>`;
 
@@ -1313,7 +1314,7 @@ function endSession() {
 
 showHome();
 const ls=$('language-select');ls.value=currentLanguage;ls.addEventListener('change',e=>{currentLanguage=e.target.value;try{localStorage.setItem(LANG_KEY,currentLanguage);}catch{};document.documentElement.lang=currentLanguage;applyLanguage();if($('learn').classList.contains('on'))startLearn(learnScope);if($('session').classList.contains('on')&&S)renderQ();if($('review').classList.contains('on')&&S)endSession();});
-function applyLanguage(){$('learnbtn').textContent=T('learn');$('home-h').textContent=T('title');$('start').textContent=T('start');$('reset').textContent=T('reset');$('home-foot').firstChild.textContent=currentLanguage==='ru'?'Результаты хранятся только в этом браузере. ':'Results stay in this browser only. ';buildDropdown();const b=[...$('dd-menu').querySelectorAll('.dd-item')].find(x=>x.dataset.val===currentScope);$('dd-toggle').textContent=b?b.textContent:T('all');updateMeta();}document.documentElement.lang=currentLanguage;applyLanguage();
+function applyLanguage(){$('learnbtn').textContent=T('learn');$('home-h').textContent=T('title');$('start').textContent=T('start');$('reset').textContent=T('reset');$('learnback').textContent=currentLanguage==='ru'?'← Назад':'← Back';$('learnstart').textContent=T('start');$('end').setAttribute('aria-label',T('end'));$('home-foot').firstChild.textContent=currentLanguage==='ru'?'Результаты хранятся только в этом браузере. ':'Results stay in this browser only. ';buildDropdown();const b=[...$('dd-menu').querySelectorAll('.dd-item')].find(x=>x.dataset.val===currentScope);$('dd-toggle').textContent=b?b.textContent:T('all');updateMeta();}document.documentElement.lang=currentLanguage;applyLanguage();
 </script>
 </body>
 </html>
