@@ -875,20 +875,20 @@ function generatedPractice(topic,i){
   const v={30:'1/2',45:'√2/2',60:'√3/2'}[angle];return q('Evaluate sin '+angle+'°.',v,'1','0','Substitute the randomly selected standard angle.');
  case 'der':
   if(i===0)return q('If f(x)=x^'+n+', find f\'('+x+').',n*x**(n-1),(n+1)*x**(n-1),x**n,'Apply the power rule.');
-  if(i===1)return q('Find the derivative of sin x at x=0.',1,0,-1,'The derivative is cos x.');
-  if(i===2)return q('Find the derivative of cos x at x=0.',0,1,-1,'The derivative is −sin x.');
-  if(i===3)return q('Find the derivative of tan x at x=0.',1,0,2,'The derivative is 1/cos²x.');
-  if(i===4)return q('Find the derivative of eˣ at x=0.',1,0,'e','The derivative of eˣ is eˣ.');
-  if(i===5)return q('Find the derivative of ln x at x=1.',1,0,-1,'The derivative is 1/x.');
-  if(i===6)return q('If f=2,g=3,f\'=4,g\'=5, find (fg)\'.',22,20,12,'Product rule: 4×3 + 2×5 = 22.');
-  if(i===7)return q('If f=2,g=4,f\'=3,g\'=1, find (f/g)\'.','10/16','14/16','3/4','Quotient rule: (3×4 − 2×1)/4².');
-  if(i===8)return q('Find derivative of 1/cos x at x=0.',0,1,-1,'The derivative is sin x / cos²x.');
-  if(i===9)return q('Evaluate −1/sin²x at x=90°.',-1,1,0,'sin 90° = 1.');
-  if(i===10)return q('For f(x)=2ˣ, find f\'(1).','2 ln 2','ln 2',4,'The derivative is 2ˣ ln 2.');
-  if(i===11)return q('Find derivative of arcsin x at x=0.',1,0,-1,'1/√(1−0²) = 1.');
-  if(i===12)return q('Find derivative of arctan x at x=0.',1,0,2,'1/(1+0²) = 1.');
-  if(i===13)return q('Find derivative of constant 7.',0,1,7,'The derivative of a constant is zero.');
-  return q('If f\'(g(x))=3 and g\'(x)=4, find the chain-rule product.',12,7,1,'Multiply 3 × 4.');
+  if(i===1){const v={30:'√3/2',45:'√2/2',60:'1/2'}[angle];return q('Find the derivative of sin x at x='+angle+'°.',v,'1','0','The derivative is cos x.');}
+  if(i===2){const v={30:'-1/2',45:'-√2/2',60:'-√3/2'}[angle];return q('Find the derivative of cos x at x='+angle+'°.',v,'0','1','The derivative is −sin x.');}
+  if(i===3){const v={30:'4/3',45:'2',60:'4'}[angle];return q('Find the derivative of tan x at x='+angle+'°.',v,'1','0','The derivative is 1/cos²x.');}
+  if(i===4)return q('Find the derivative of eˣ at x='+val+'.',val?'e':'1',val?'1':'e','0','The derivative of eˣ is eˣ.');
+  if(i===5)return q('Find the derivative of ln x at x='+x+'.','1/'+x,'1/'+(x+1),'1/'+(x-1),'The derivative is 1/x.');
+  if(i===6){const f=randInt(2,6),g=randInt(2,6),fp=randInt(2,6),gp=randInt(2,6),v=fp*g+f*gp;return q('If f='+f+', g='+g+', f\'='+fp+', g\'='+gp+', find (fg)\'.',v,v+f,v-f,'Product rule: f\'g + fg\'.');}
+  if(i===7){const f=randInt(2,6),g=randInt(3,7),fp=randInt(2,6),gp=randInt(1,3),v=fp*g-f*gp;return q('If f='+f+', g='+g+', f\'='+fp+', g\'='+gp+', find (f/g)\'.',v+'/'+(g*g),(fp*g+f*gp)+'/'+(g*g),fp+'/'+gp,'Quotient rule: (f\'g − fg\')/g².');}
+  if(i===8){const v={30:'2/3',45:'√2',60:'2√3'}[angle];return q('Find derivative of 1/cos x at x='+angle+'°.',v,'0','1','The derivative is sin x / cos²x.');}
+  if(i===9){const v={30:'-4',45:'-2',60:'-4/3'}[angle];return q('Evaluate −1/sin²x at x='+angle+'°.',v,'1','0','The derivative of cotangent is −1/sin²x.');}
+  if(i===10)return q('For f(x)='+base+'ˣ, find f\'('+x+').',base+'^'+x+' ln '+base,'ln '+base,base+'^'+(x-1),'The derivative is aˣ ln a.');
+  if(i===11){const z=pick([0,0.6,0.8]),v=z===0?'1':z===0.6?'5/4':'5/3';return q('Find derivative of arcsin x at x='+z+'.',v,'1','0','Use 1/√(1−x²).');}
+  if(i===12){const z=randInt(0,2),v=1/(1+z*z);return q('Find derivative of arctan x at x='+z+'.',String(v),String(v+0.5),String(v/2),'Use 1/(1+x²).');}
+  if(i===13)return q('Find derivative of the constant '+a+'.',0,1,a,'The derivative of a constant is zero.');
+  {const u=randInt(2,6),chainV=randInt(2,6);return q('If f\'(g(x))='+u+' and g\'(x)='+chainV+', find the chain-rule product.',u*chainV,u+chainV,u*chainV+1,'Multiply the two derivatives.');}
  case 'int':
   if(i===0)return q('For n=2, evaluate x^(n+1)/(n+1) at x=2.','8/3','4','2','Substitute x=2 and n=2.');
   if(i===1)return q('Evaluate ln|x| at x=1.',0,1,-1,'ln 1 = 0.');
