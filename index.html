@@ -821,7 +821,7 @@ const TOPICS = [
 
 
 function generatedPractice(topic,i){
- const a=randInt(2,7),b=randInt(2,6),n=randInt(2,4),x=randInt(2,5);
+ const a=randInt(2,7); let b=randInt(2,6); if(b===a)b=b===6?2:b+1; const n=randInt(2,4),x=n+2;
  const q=(s,v,w1,w2,e)=>({q:s,o:[String(v),String(w1),String(w2)],a:0,e:e,w:['','Проверьте подстановку.','Проверьте вычисления.']});
  switch(topic){
  case 'sqrt':
@@ -848,7 +848,7 @@ function generatedPractice(topic,i){
   if(i===2)return q('A quadratic has D = '+a+'. How many distinct real roots?',2,1,0,'Positive discriminant gives two roots.');
   if(i===3)return q('A quadratic has D = 0. How many distinct real roots?',1,2,0,'Zero discriminant gives one repeated root.');
   if(i===4)return q('Solve \\('+a+'x+'+b+'='+(a*x+b)+'\\).',x,x+1,x-1,'Subtract b, then divide by a.');
-  return q('Complete the square in \\(x^2+'+(2*a)+'x\\). What constant is subtracted?',a*a,a,2*a,'Subtract (b/2)².');
+  return q('Complete the square in \\(x^2+'+(2*a)+'x\\). What constant is subtracted?',a*a,a,2*a+1,'Subtract (b/2)².');
  case 'log':
   if(i===0)return q('If \\(\\\\log_2 '+(2**n)+'=c\\), find c.',n,n+1,n-1,'2 to the power '+n+' equals '+(2**n)+'.');
   if(i===1)return q('Evaluate \\(\\\\log_'+a+' '+a+'\\).',1,0,a,'The logarithm of its base is 1.');
