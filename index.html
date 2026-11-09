@@ -821,7 +821,7 @@ const TOPICS = [
 
 
 function generatedPractice(topic,i){
- const a=randInt(2,7); let b=randInt(2,6); if(Math.abs(b-a)<=1)b=a<=4?a+2:a-2; const n=randInt(2,4),x=n+2;
+ const a=randInt(2,7); let b=randInt(2,6); if(Math.abs(b-a)<=1)b=a<=4?a+2:a-2; const n=randInt(2,4),x=n+2; const angle=pick([30,45,60]), triple=pick([[3,4,5],[5,12,13],[8,15,17]]), base=randInt(2,5), val=pick([0,1]);
  const q=(s,v,w1,w2,e)=>({q:s,o:[String(v),String(w1),String(w2)],a:0,e:e,w:['','Проверьте подстановку.','Проверьте вычисления.']});
  switch(topic){
  case 'sqrt':
@@ -844,7 +844,8 @@ function generatedPractice(topic,i){
   if(i===4)return q('Evaluate \\(('+a+'-'+b+')^3\\).',(a-b)**3,a**3-b**3,(a-b)**2,'Cube of a difference.');
   return q('Evaluate \\('+a+'^3+'+b+'^3\\).',a**3+b**3,(a+b)**3,a**3-b**3,'Substitute into the sum of cubes.');
  case 'eq':
-  if(i===0||i===1){const d=b*b-4*a;return q('For \\(x^2+'+b+'x+'+a+'=0\\), calculate D.',d,b*b+4*a,b*b,'D = b² − 4ac.');}
+  if(i===0){const r1=randInt(1,4),r2=randInt(2,5);return q('Solve \\(x^2-'+(r1+r2)+'x+'+(r1*r2)+'=0\\) using the quadratic formula.',r1+', '+r2,r1+', '+(r2+1),(r1+1)+', '+r2,'The roots are '+r1+' and '+r2+'.');}
+  if(i===1){const d=b*b-4*a;return q('For \\(x^2+'+b+'x+'+a+'=0\\), calculate D.',d,b*b+4*a,b*b,'D = b² − 4ac.');}
   if(i===2)return q('A quadratic has D = '+a+'. How many distinct real roots?',2,1,0,'Positive discriminant gives two roots.');
   if(i===3)return q('A quadratic has D = 0. How many distinct real roots?',1,2,0,'Zero discriminant gives one repeated root.');
   if(i===4)return q('Solve \\('+a+'x+'+b+'='+(a*x+b)+'\\).',x,x+1,x-1,'Subtract b, then divide by a.');
@@ -858,20 +859,20 @@ function generatedPractice(topic,i){
   if(i===5)return q('Evaluate \\(\\log_2((2^'+a+')^'+b+')\\).',a*b,a+b,a-b,'Move the exponent in front.');
   return q('Evaluate \\(\\log_2 '+(2**n)+'\\).',n,n+1,1,'2 to the power '+n+' equals '+(2**n)+'.');
  case 'trig':
-  if(i===0)return q('Evaluate sin 30°.','1/2','√3/2',1,'Standard trigonometric value.');
-  if(i===1)return q('Evaluate cos 60°.','1/2','√3/2',0,'Standard trigonometric value.');
-  if(i===2)return q('Evaluate tan 45°. ',1,0,'√3','Standard trigonometric value.');
-  if(i===3)return q('If sin θ = 3/5 and cos θ = 4/5, find sin² θ + cos² θ.',1,0,2,'The Pythagorean identity equals 1.');
-  if(i===4)return q('Evaluate sin(90° − 30°).','√3/2','1/2',1,'Use the co-function identity.');
-  if(i===5)return q('If sin θ = 3/5 and cos θ = 4/5, find 2sin θ cos θ.','24/25','7/25','12/25','Multiply 2 × 3/5 × 4/5.');
-  if(i===6)return q('If sin θ = 3/5 and cos θ = 4/5, find cos² θ − sin² θ.','7/25','24/25','1/25','16/25 − 9/25 = 7/25.');
-  if(i===7)return q('Evaluate 1/sin 30°. ',2,1,'√3','The reciprocal of 1/2 is 2.');
-  if(i===8)return q('Evaluate 1/cos 60°. ',2,1,'√3','The reciprocal of 1/2 is 2.');
-  if(i===9)return q('If tan θ = 3/4, find 1 + tan² θ.','25/16','9/16','7/4','1 + 9/16 = 25/16.');
-  if(i===10)return q('Evaluate sin(30° + 60°).',1,0,'1/2','sin 90° = 1.');
-  if(i===11)return q('Evaluate cos(30° + 60°).',0,1,-1,'cos 90° = 0.');
-  if(i===12)return q('Evaluate tan 60°.','√3',1,'1/√3','Standard trigonometric value.');
-  return q('Evaluate sin 45°.','√2/2','1/2',1,'Standard trigonometric value.');
+  if(i===0){const v={30:'1/2',45:'√2/2',60:'√3/2'}[angle];return q('Evaluate sin '+angle+'°.',v,'1','0','Substitute the randomly selected standard angle.');}
+  if(i===1){const v={30:'√3/2',45:'√2/2',60:'1/2'}[angle];return q('Evaluate cos '+angle+'°.',v,'1','0','Substitute the randomly selected standard angle.');}
+  if(i===2){const v={30:'1/√3',45:'1',60:'√3'}[angle];return q('Evaluate tan '+angle+'°.',v,'0','1','Substitute the randomly selected standard angle.');}
+  if(i===3){const [p,r,h]=triple;return q('If sin θ = '+p+'/'+h+' and cos θ = '+r+'/'+h+', find sin² θ + cos² θ.',1,0,2,'The Pythagorean identity equals 1.');}
+  if(i===4){const v={30:'√3/2',45:'√2/2',60:'1/2'}[angle];return q('Evaluate sin(90° − '+angle+'°).',v,'1','0','Use the co-function identity.');}
+  if(i===5){const [p,r,h]=triple;return q('If sin θ = '+p+'/'+h+' and cos θ = '+r+'/'+h+', find 2sin θ cos θ.',(2*p*r)+'/'+(h*h),(p*r)+'/'+(h*h),(p+r)+'/'+h,'Multiply 2 × sin θ × cos θ.');}
+  if(i===6){const [p,r,h]=triple;return q('If sin θ = '+p+'/'+h+' and cos θ = '+r+'/'+h+', find cos² θ − sin² θ.',(r*r-p*p)+'/'+(h*h),(r*r+p*p)+'/'+(h*h),(r-p)+'/'+h,'Subtract sin² from cos².');}
+  if(i===7){const v={30:'2',45:'√2',60:'2/√3'}[angle];return q('Evaluate 1/sin '+angle+'°.',v,'1','0','Take the reciprocal of the sine value.');}
+  if(i===8){const v={30:'2/√3',45:'√2',60:'2'}[angle];return q('Evaluate 1/cos '+angle+'°.',v,'1','0','Take the reciprocal of the cosine value.');}
+  if(i===9){const [p,r,h]=triple;return q('If tan θ = '+p+'/'+r+', find 1 + tan² θ.',(h*h)+'/'+(r*r),(p*p)+'/'+(r*r),(h+r)+'/'+r,'Use 1 + tan²θ = sec²θ.');}
+  if(i===10)return q('Evaluate sin('+angle+'° + '+(90-angle)+'°).',1,0,'1/2','The two angles add to 90°.');
+  if(i===11)return q('Evaluate cos('+angle+'° + '+(90-angle)+'°).',0,1,-1,'The two angles add to 90°.');
+  if(i===12){const v={30:'1/√3',45:'1',60:'√3'}[angle];return q('Evaluate tan '+angle+'°.',v,'0','2','Substitute the randomly selected standard angle.');}
+  const v={30:'1/2',45:'√2/2',60:'√3/2'}[angle];return q('Evaluate sin '+angle+'°.',v,'1','0','Substitute the randomly selected standard angle.');
  case 'der':
   if(i===0)return q('If f(x)=x^'+n+', find f\'('+x+').',n*x**(n-1),(n+1)*x**(n-1),x**n,'Apply the power rule.');
   if(i===1)return q('Find the derivative of sin x at x=0.',1,0,-1,'The derivative is cos x.');
