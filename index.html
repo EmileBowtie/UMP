@@ -48,13 +48,14 @@
     width: 300%; height: 200%;
     left: 0; top: -50%;
   }
-  .organic-bg .layer { animation: drift linear infinite; will-change: transform; }
-  .organic-bg .layer.a { animation-duration: 80s; opacity: 0.85; }
-  .organic-bg .layer.b { animation-duration: 110s; animation-direction: reverse; opacity: 0.7; }
-  .organic-bg .layer.c { animation-duration: 140s; opacity: 0.55; }
-  @keyframes drift {
+  /* Slow, eased back-and-forth motion avoids a visible reset at the loop point. */
+  .organic-bg .layer { animation: drift-smooth ease-in-out infinite alternate; will-change: transform; }
+  .organic-bg .layer.a { animation-duration: 95s; opacity: 0.85; }
+  .organic-bg .layer.b { animation-duration: 125s; opacity: 0.7; }
+  .organic-bg .layer.c { animation-duration: 155s; opacity: 0.55; }
+  @keyframes drift-smooth {
     from { transform: translate3d(0, 0, 0); }
-    to   { transform: translate3d(-33.333%, 0, 0); }
+    to   { transform: translate3d(-7%, 0, 0); }
   }
   @media (prefers-reduced-motion: reduce) {
     .organic-bg .layer { animation: none; }
@@ -154,9 +155,16 @@
   .home-foot {
     position: relative; z-index: 1;
     margin-top: auto; padding-top: 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
     text-align: center; color: #b8aec8; font-size: 0.8rem;
   }
   .home-foot .link { color: #c4b8d4; font-size: 0.8rem; }
+  .language-dd { flex: 0 0 auto; width: 156px; }
+  .language-dd .dd-toggle { justify-content: flex-start; min-height: 42px; padding-top: 9px; padding-bottom: 9px; }
+  .language-dd .dd-menu { max-height: 160px; }
+  .dd.dropup .dd-menu { top: auto; bottom: calc(100% + 6px); }
+  .dd.dropup .dd-toggle::after { transform: translateY(-40%) rotate(180deg); }
+  .dd.dropup.open .dd-toggle::after { transform: translateY(-40%) rotate(0deg); }
 
   /* Custom dropdown */
   .dd { position: relative; flex: 1 1 200px; min-width: 0; text-align: left; }
@@ -374,7 +382,7 @@
     <section class="screen on" id="home" aria-labelledby="home-h">
       <div class="home-in">
         <p class="kick">UMP: Ultimate Math Practice</p>
-        <div class="controls"><label class="sr" for="language-select">Language</label><select id="language-select" aria-label="Language" style="min-height:42px;background:#181421;color:#eee;border:1px solid #3a3448;border-radius:10px;padding:8px 12px"><option value="en">English</option><option value="ru">Русский</option></select>
+        <div class="controls">
           <div class="dd" id="scope-dd">
             <button type="button" class="dd-toggle" id="dd-toggle" aria-haspopup="listbox" aria-expanded="false">All topics</button>
             <div class="dd-menu" id="dd-menu" role="listbox"></div>
@@ -385,7 +393,13 @@
         <button type="button" class="btn big" id="start">Start Training</button>
         <p class="meta" id="meta" aria-live="polite"></p>
       </div>
-      <div class="home-foot" id="home-foot">Results stay in this browser only. <button type="button" class="link" id="reset">Reset my results</button></div>
+      <div class="home-foot" id="home-foot">
+        <div class="dd dropup language-dd" id="language-dd">
+          <button type="button" class="dd-toggle" id="language-toggle" aria-haspopup="listbox" aria-expanded="false">English</button>
+          <div class="dd-menu" id="language-menu" role="listbox"></div>
+        </div>
+        <div class="foot-copy"><span id="foot-copy">Results stay in this browser only.</span> <button type="button" class="link" id="reset">Reset my results</button></div>
+      </div>
     </section>
 
     <section class="screen" id="learn" aria-labelledby="learn-h">
@@ -909,7 +923,7 @@ function generatedPractice(topic,i){
 
 const LANG_KEY='ump-language-v1';
 let currentLanguage='en'; try{currentLanguage=localStorage.getItem(LANG_KEY)||'en';}catch{}
-const UI_RU={all:'Все темы',groups:'Разделы формул',learn:'Изучить формулы',title:'Запоминание формул',start:'Начать тренировку',reset:'Сбросить результаты',formula:'Формула',practice:'Практика',next:'Далее',finish:'Завершить',delete:'Удалить все результаты тренировок?',complete:'Тренировка завершена',mistakes:'Работа над ошибками',first:'с первой попытки',review:'Разбор ошибок',noMistakes:'Ошибок нет. Отличное знание материала.',answer:'Ответ: ',chose:'Ваш ответ:',slip:'Где ошибка:',method:'Решение:',byTopic:'По темам',topic:'Тема',nextReview:'Следующее повторение',box:'интервал',new:'Новая тренировка',home:'На главную',timeRan:'Время истекло',end:'Завершить тренировку'};
+const UI_RU={all:'Все темы',groups:'Разделы формул',learn:'Формулы',title:'Памятка Формул',start:'Начать тренировку',reset:'Сбросить результаты',formula:'Формула',practice:'Практика',next:'Далее',finish:'Завершить',delete:'Удалить все результаты тренировок?',complete:'Тренировка завершена',mistakes:'Работа над ошибками',first:'с первой попытки',review:'Разбор ошибок',noMistakes:'Ошибок нет. Отличное знание материала.',answer:'Ответ: ',chose:'Ваш ответ:',slip:'Где ошибка:',method:'Решение:',byTopic:'По темам',topic:'Тема',nextReview:'Следующее повторение',box:'интервал',new:'Новая тренировка',home:'На главную',timeRan:'Время истекло',end:'Завершить тренировку'};
 const WORD_RU_EXTRA={"What":"Что","means":"означает","If":"Если","For":"Для","find":"найдите","calculate":"вычислите","Evaluate":"Вычислите","Simplify":"Упростите","Expand":"Раскройте скобки","Factor":"Разложите на множители","Solve":"Решите","A quadratic has":"Квадратное уравнение имеет","How many distinct real roots":"Сколько различных действительных корней","Complete the square":"Выделите полный квадрат","What constant is subtracted":"какая константа вычитается","at x":"при x","using":"используя","formula":"формулу","as a power":"в виде степени","as a":"в виде","find c":"найдите c","derivative of":"производную","Derivative":"Производная","Derivatives":"Производные","Derivative:":"Производная:","Derivative of":"Производная от","Find":"Найдите"," of the function":" функции"," and the other formula":" и другая формула","Standard.":"Стандартная формула.","No minus.":"Без минуса.","Wrong form.":"Неверная форма.","Wrong function.":"Неверная функция.","Forgot to divide.":"Забыли разделить.","That is the derivative.":"Это производная.","That is arcsin.":"Это арксинус.","That is arctan.":"Это арктангенс.","Order reversed.":"Порядок перепутан.","Missing middle term.":"Пропущен средний член.","Wrong argument.":"Неверный аргумент.","The derivative is":"Производная равна","The derivative of":"Производная от","The antiderivative":"Первообразная","Standard trigonometric value":"Табличное значение тригонометрической функции","Standard value":"Табличное значение","The logarithm of its base is 1.":"Логарифм основания по этому же основанию равен 1.","The principal square root is non-negative.":"Арифметический квадратный корень неотрицателен.","Subtract b, then divide by a.":"Вычтите b, затем разделите на a.","The product rule adds logarithms.":"Логарифм произведения равен сумме логарифмов.","The quotient rule subtracts logarithms.":"Логарифм частного равен разности логарифмов.","Use the co-function identity.":"Используйте формулу приведения.","Apply the power rule.":"Примените правило степени.","Substitute x=2 and n=2.":"Подставьте x=2 и n=2.","Substitute x=1.":"Подставьте x=1.","The Pythagorean identity always equals 1.":"Основное тригонометрическое тождество равно 1."};
 const WORD_RU_EXTRA_MORE={" equal to?":"?","Quadratic formula for":"Формула корней квадратного уравнения для","the quadratic has":"квадратное уравнение имеет","Completing the square":"Выделение полного квадрата","Derivative of a constant":"Производная постоянной","Definite integral":"Определённый интеграл","Definite:":"Определённый интеграл:","Change of base formula":"Формула перехода к новому основанию","using the quadratic formula":"по формуле корней квадратного уравнения","chain-rule product":"произведение по правилу цепочки","Ratios:":"Тригонометрические отношения:","Reciprocal:":"Обратные функции:","Values:":"Значения:","Complementary:":"Формулы приведения:","Pythagorean:":"Основное тождество:","Double angle:":"Формулы двойного угла:","Sum:":"Сумма углов:","Linear:":"Линейное уравнение:","Discriminant:":"Дискриминант:","Product:":"Произведение:","Quotient:":"Частное:","Chain:":"Правило цепочки:","Standard.":"Стандартная формула.","Standard inverse trig.":"Стандартная формула обратной тригонометрической функции.","Missing the absolute value.":"Пропущен знак модуля.","Cannot add under one root.":"Нельзя складывать под одним корнем.","That is the derivative.":"Это производная.","That is the expansion of":"Это раскрытие выражения","Forgot to divide.":"Забыли разделить.","Wrong nesting.":"Неверная запись степени.","Not the product of derivatives.":"Это не произведение производных.","Wrong sign.":"Неверный знак.","Wrong form.":"Неверная форма.","Inverse function.":"Обратная функция.","Power rule misuse.":"Неверно применено правило степени.","Order reversed.":"Порядок перепутан.","Fundamental theorem of calculus.":"Основная теорема анализа.","e^x is its own derivative.":"Производная e^x равна e^x.","Antiderivative of sin is −cos.":"Первообразная синуса равна минус косинусу.","Antiderivative of cos is sin.":"Первообразная косинуса равна синусу."};
 const WORD_RU_EXTRA_LAST={"two roots":"два корня","two distinct real roots":"два различных действительных корня","one real root":"один действительный корень","no real roots":"нет действительных корней","exactly one real root (repeated)":"один действительный корень кратности два","repeated root":"кратный корень","Definition:":"Определение:","Change of base:":"Переход к новому основанию:","Positive discriminant":"Положительный дискриминант","Zero discriminant":"Нулевой дискриминант","Negative discriminant":"Отрицательный дискриминант","Product rule for radicals.":"Правило произведения корней.","Quotient rule for radicals.":"Правило частного корней.","Principal square root is non-negative":"Арифметический квадратный корень неотрицателен"};
@@ -1311,8 +1325,57 @@ function endSession() {
 }
 
 showHome();
-const ls=$('language-select');ls.value=currentLanguage;ls.addEventListener('change',e=>{currentLanguage=e.target.value;try{localStorage.setItem(LANG_KEY,currentLanguage);}catch{};document.documentElement.lang=currentLanguage;applyLanguage();if($('learn').classList.contains('on'))startLearn(learnScope);if($('session').classList.contains('on')&&S)renderQ();if($('review').classList.contains('on')&&S)endSession();});
-function applyLanguage(){$('learnbtn').textContent=T('learn');$('home-h').textContent=T('title');$('start').textContent=T('start');$('reset').textContent=T('reset');$('learnback').textContent=currentLanguage==='ru'?'← Назад':'← Back';$('learnstart').textContent=T('start');$('end').setAttribute('aria-label',T('end'));$('home-foot').firstChild.textContent=currentLanguage==='ru'?'Результаты хранятся только в этом браузере. ':'Results stay in this browser only. ';buildDropdown();const b=[...$('dd-menu').querySelectorAll('.dd-item')].find(x=>x.dataset.val===currentScope);$('dd-toggle').textContent=b?b.textContent:T('all');updateMeta();}document.documentElement.lang=currentLanguage;applyLanguage();
+function buildLanguageDropdown() {
+  const menu = $('language-menu');
+  const languages = [{ value: 'en', label: 'English' }, { value: 'ru', label: 'Русский' }];
+  menu.innerHTML = languages.map(item =>
+    '<button type="button" class="dd-item ' + (currentLanguage === item.value ? 'active' : '') +
+    '" role="option" aria-selected="' + (currentLanguage === item.value) +
+    '" data-lang="' + item.value + '">' + item.label + '</button>'
+  ).join('');
+  menu.querySelectorAll('.dd-item').forEach(btn => {
+    btn.onclick = () => setLanguage(btn.dataset.lang);
+  });
+  $('language-toggle').textContent = currentLanguage === 'ru' ? 'Русский' : 'English';
+}
+function setLanguage(language) {
+  if (!['en', 'ru'].includes(language)) return;
+  currentLanguage = language;
+  try { localStorage.setItem(LANG_KEY, currentLanguage); } catch {}
+  document.documentElement.lang = currentLanguage;
+  $('language-dd').classList.remove('open');
+  $('language-toggle').setAttribute('aria-expanded', 'false');
+  applyLanguage();
+  if ($('learn').classList.contains('on')) startLearn(learnScope);
+  if ($('session').classList.contains('on') && S) renderQ();
+  if ($('review').classList.contains('on') && S) endSession();
+}
+$('language-toggle').onclick = e => {
+  e.stopPropagation();
+  const open = $('language-dd').classList.toggle('open');
+  $('language-toggle').setAttribute('aria-expanded', String(open));
+};
+document.addEventListener('click', () => {
+  $('language-dd').classList.remove('open');
+  $('language-toggle').setAttribute('aria-expanded', 'false');
+});
+function applyLanguage() {
+  $('learnbtn').textContent = T('learn');
+  $('home-h').textContent = T('title');
+  $('start').textContent = T('start');
+  $('reset').textContent = T('reset');
+  $('learnback').textContent = currentLanguage === 'ru' ? '← Назад' : '← Back';
+  $('learnstart').textContent = T('start');
+  $('end').setAttribute('aria-label', T('end'));
+  $('foot-copy').textContent = currentLanguage === 'ru' ? 'Результаты хранятся только в этом браузере.' : 'Results stay in this browser only.';
+  buildDropdown();
+  const b = [...$('dd-menu').querySelectorAll('.dd-item')].find(x => x.dataset.val === currentScope);
+  $('dd-toggle').textContent = b ? b.textContent : T('all');
+  buildLanguageDropdown();
+  updateMeta();
+}
+document.documentElement.lang = currentLanguage;
+applyLanguage();
 </script>
 </body>
 </html>
