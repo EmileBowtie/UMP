@@ -50,9 +50,9 @@
   }
   /* Slow, eased back-and-forth motion avoids a visible reset at the loop point. */
   .organic-bg .layer { animation: drift-smooth ease-in-out infinite alternate; will-change: transform; }
-  .organic-bg .layer.a { animation-duration: 47.5s; opacity: 0.85; }
-  .organic-bg .layer.b { animation-duration: 62.5s; opacity: 0.7; }
-  .organic-bg .layer.c { animation-duration: 77.5s; opacity: 0.55; }
+  .organic-bg .layer.a { animation-duration: 23.75s; opacity: 0.85; }
+  .organic-bg .layer.b { animation-duration: 31.25s; opacity: 0.7; }
+  .organic-bg .layer.c { animation-duration: 38.75s; opacity: 0.55; }
   @keyframes drift-smooth {
     from { transform: translate3d(0, 0, 0); }
     to   { transform: translate3d(-7%, 0, 0); }
@@ -155,7 +155,7 @@
   .home-foot {
     position: relative; z-index: 1;
     margin-top: auto; padding-top: 16px;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
     text-align: center; color: #b8aec8; font-size: 0.8rem;
   }
   .home-foot .link { color: #c4b8d4; font-size: 0.8rem; }
