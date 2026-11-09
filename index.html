@@ -885,7 +885,7 @@ function generatedPractice(topic,i){
   if(i===8){const v={30:'2/3',45:'√2',60:'2√3'}[angle];return q('Find derivative of 1/cos x at x='+angle+'°.',v,'0','1','The derivative is sin x / cos²x.');}
   if(i===9){const v={30:'-4',45:'-2',60:'-4/3'}[angle];return q('Evaluate −1/sin²x at x='+angle+'°.',v,'1','0','The derivative of cotangent is −1/sin²x.');}
   if(i===10)return q('For f(x)='+base+'ˣ, find f\'('+x+').',base+'^'+x+' ln '+base,'ln '+base,base+'^'+(x-1),'The derivative is aˣ ln a.');
-  if(i===11){const z=pick([0,0.6,0.8]),v=z===0?'1':z===0.6?'5/4':'5/3';return q('Find derivative of arcsin x at x='+z+'.',v,'1','0','Use 1/√(1−x²).');}
+  if(i===11){const z=pick([0,0.6,0.8]),v=z===0?'1':z===0.6?'5/4':'5/3';return q('Find derivative of arcsin x at x='+z+'.',v,'2','0','Use 1/√(1−x²).');}
   if(i===12){const z=randInt(0,2),v=1/(1+z*z);return q('Find derivative of arctan x at x='+z+'.',String(v),String(v+0.5),String(v/2),'Use 1/(1+x²).');}
   if(i===13)return q('Find derivative of the constant '+a+'.',0,1,a,'The derivative of a constant is zero.');
   {const u=randInt(2,6),chainV=randInt(2,6);return q('If f\'(g(x))='+u+' and g\'(x)='+chainV+', find the chain-rule product.',u*chainV,u+chainV,u*chainV+1,'Multiply the two derivatives.');}
