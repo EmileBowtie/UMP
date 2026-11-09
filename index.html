@@ -374,7 +374,7 @@
     <section class="screen on" id="home" aria-labelledby="home-h">
       <div class="home-in">
         <p class="kick">UMP: Ultimate Math Practice</p>
-        <div class="controls">
+        <div class="controls"><label class="sr" for="language-select">Language</label><select id="language-select" aria-label="Language" style="min-height:42px;background:#181421;color:#eee;border:1px solid #3a3448;border-radius:10px;padding:8px 12px"><option value="en">English</option><option value="ru">Русский</option></select>
           <div class="dd" id="scope-dd">
             <button type="button" class="dd-toggle" id="dd-toggle" aria-haspopup="listbox" aria-expanded="false">All topics</button>
             <div class="dd-menu" id="dd-menu" role="listbox"></div>
@@ -385,7 +385,7 @@
         <button type="button" class="btn big" id="start">Start Training</button>
         <p class="meta" id="meta" aria-live="polite"></p>
       </div>
-      <div class="home-foot">Results stay in this browser only. <button type="button" class="link" id="reset">Reset my results</button></div>
+      <div class="home-foot" id="home-foot">Results stay in this browser only. <button type="button" class="link" id="reset">Reset my results</button></div>
     </section>
 
     <section class="screen" id="learn" aria-labelledby="learn-h">
@@ -819,6 +819,101 @@ const TOPICS = [
   }
 ];
 
+
+function generatedPractice(topic,i){
+ const a=randInt(2,7),b=randInt(2,6),n=randInt(2,4),x=randInt(2,5);
+ const q=(s,v,w1,w2,e)=>({q:s,o:[String(v),String(w1),String(w2)],a:0,e:e,w:['','Проверьте подстановку.','Проверьте вычисления.']});
+ switch(topic){
+ case 'sqrt':
+  if(i===0)return q('Simplify \\(\\\\sqrt{'+a*a+'\\\\cdot'+b*b+'}\\).',a*b,a*b+1,a*b-1,'Take the square roots of both factors.');
+  if(i===1)return q('Evaluate \\(\\\\sqrt{'+a*a+'/'+b*b+'}\\).',a+'/'+b,(a+1)+'/'+b,a+'/'+(b+1),'Take the square root of numerator and denominator.');
+  if(i===2)return q('Evaluate \\(\\\\sqrt{(-'+a+')^2}\\).',a,a+1,-a,'The principal square root is non-negative.');
+  return q('Evaluate \\((\\\\sqrt{'+a*a+'})^2\\).',a*a,a*a+1,a,'Squaring the root returns the radicand.');
+ case 'pow':
+  if(i===0)return q('Simplify \\(2^'+a+'\\\\cdot2^'+b+'\\).','2^'+(a+b),'2^'+(a*b),'2^'+(a-b),'Add exponents.');
+  if(i===1)return q('Simplify \\(3^'+(a+b)+'/3^'+b+'\\).','3^'+a,'3^'+(a+b),'3^'+b,'Subtract exponents.');
+  if(i===2)return q('Simplify \\((2^'+a+')^'+b+'\\).','2^'+(a*b),'2^'+(a+b),'2^'+a,'Multiply exponents.');
+  if(i===3)return q('Evaluate \\('+a+'^0\\).',1,0,a,'Any non-zero number to power zero is 1.');
+  if(i===4)return q('Evaluate \\(2^{-'+a+'}\\).','1/'+(2**a),'-'+(2**a),'1/2','A negative exponent means reciprocal.');
+  return q('Evaluate \\((2\\\\cdot3)^'+a+'\\).',6**a,2**a+3**a,6*a,'Apply the power to both factors.');
+ case 'binom':
+  if(i===0)return q('Evaluate \\(('+a+'+'+b+')^2\\).',(a+b)**2,a*a+b*b,(a-b)**2,'Use the square-of-a-sum formula.');
+  if(i===1)return q('Evaluate \\(('+a+'-'+b+')^2\\).',(a-b)**2,a*a+b*b,(a+b)**2,'Use the square-of-a-difference formula.');
+  if(i===2)return q('Evaluate \\('+a*a+'-'+b*b+'\\).',(a-b)*(a+b),a*a+b*b,(a-b)**2,'Difference of squares.');
+  if(i===3)return q('Evaluate \\(('+a+'+'+b+')^3\\).',(a+b)**3,a**3+b**3,(a+b)**2,'Cube of a sum.');
+  if(i===4)return q('Evaluate \\(('+a+'-'+b+')^3\\).',(a-b)**3,a**3-b**3,(a-b)**2,'Cube of a difference.');
+  return q('Evaluate \\('+a+'^3+'+b+'^3\\).',a**3+b**3,(a+b)**3,a**3-b**3,'Substitute into the sum of cubes.');
+ case 'eq':
+  if(i===0||i===1){const d=b*b-4*a;return q('For \\(x^2+'+b+'x+'+a+'=0\\), calculate D.',d,b*b+4*a,b*b,'D = b² − 4ac.');}
+  if(i===2)return q('A quadratic has D = '+a+'. How many distinct real roots?',2,1,0,'Positive discriminant gives two roots.');
+  if(i===3)return q('A quadratic has D = 0. How many distinct real roots?',1,2,0,'Zero discriminant gives one repeated root.');
+  if(i===4)return q('Solve \\('+a+'x+'+b+'='+(a*x+b)+'\\).',x,x+1,x-1,'Subtract b, then divide by a.');
+  return q('Complete the square in \\(x^2+'+(2*a)+'x\\). What constant is subtracted?',a*a,a,2*a,'Subtract (b/2)².');
+ case 'log':
+  if(i===0)return q('If \\(\\\\log_2 '+(2**n)+'=c\\), find c.',n,n+1,n-1,'2 to the power '+n+' equals '+(2**n)+'.');
+  if(i===1)return q('Evaluate \\(\\\\log_'+a+' '+a+'\\).',1,0,a,'The logarithm of its base is 1.');
+  if(i===2)return q('Evaluate \\(\\\\log_'+a+' 1\\).',0,1,a,'a to power zero is 1.');
+  if(i===3)return q('Evaluate \\(\\\\log_2(2^'+a+'\\\\cdot2^'+b+')\\).',a+b,a*b,a-b,'The product rule adds logarithms.');
+  if(i===4)return q('Evaluate \\(\\\\log_2(2^'+a+'/2^'+b+')\\).',a-b,a+b,a*b,'The quotient rule subtracts logarithms.');
+  if(i===5)return q('Evaluate \\(\\\\log_2((2^'+a+')^'+b+')\\).',a*b,a+b,a-b,'Move the exponent in front.');
+  return q('Evaluate \\(\\\\log_2 '+(2**n)+'\\).',n,n+1,1,'2 to the power '+n+' equals '+(2**n)+'.');
+ case 'trig':
+  if(i===0)return q('Evaluate sin 30°.','1/2','√3/2',1,'Standard trigonometric value.');
+  if(i===1)return q('Evaluate cos 60°.','1/2','√3/2',0,'Standard trigonometric value.');
+  if(i===2)return q('Evaluate tan 45°. ',1,0,'√3','Standard trigonometric value.');
+  if(i===3)return q('If sin θ = 3/5 and cos θ = 4/5, find sin² θ + cos² θ.',1,0,2,'The Pythagorean identity equals 1.');
+  if(i===4)return q('Evaluate sin(90° − 30°).','√3/2','1/2',1,'Use the co-function identity.');
+  if(i===5)return q('If sin θ = 3/5 and cos θ = 4/5, find 2sin θ cos θ.','24/25','7/25','12/25','Multiply 2 × 3/5 × 4/5.');
+  if(i===6)return q('If sin θ = 3/5 and cos θ = 4/5, find cos² θ − sin² θ.','7/25','24/25','1/25','16/25 − 9/25 = 7/25.');
+  if(i===7)return q('Evaluate 1/sin 30°. ',2,1,'√3','The reciprocal of 1/2 is 2.');
+  if(i===8)return q('Evaluate 1/cos 60°. ',2,1,'√3','The reciprocal of 1/2 is 2.');
+  if(i===9)return q('If tan θ = 3/4, find 1 + tan² θ.','25/16','9/16','7/4','1 + 9/16 = 25/16.');
+  if(i===10)return q('Evaluate sin(30° + 60°).',1,0,'1/2','sin 90° = 1.');
+  if(i===11)return q('Evaluate cos(30° + 60°).',0,1,-1,'cos 90° = 0.');
+  if(i===12)return q('Evaluate tan 60°.','√3',1,'1/√3','Standard trigonometric value.');
+  return q('Evaluate sin 45°.','√2/2','1/2',1,'Standard trigonometric value.');
+ case 'der':
+  if(i===0)return q('If f(x)=x^'+n+', find f\\'('+x+').',n*x**(n-1),(n+1)*x**(n-1),x**n,'Apply the power rule.');
+  if(i===1)return q('Find the derivative of sin x at x=0.',1,0,-1,'The derivative is cos x.');
+  if(i===2)return q('Find the derivative of cos x at x=0.',0,1,-1,'The derivative is −sin x.');
+  if(i===3)return q('Find the derivative of tan x at x=0.',1,0,2,'The derivative is 1/cos²x.');
+  if(i===4)return q('Find the derivative of eˣ at x=0.',1,0,'e','The derivative of eˣ is eˣ.');
+  if(i===5)return q('Find the derivative of ln x at x=1.',1,0,-1,'The derivative is 1/x.');
+  if(i===6)return q('If f=2,g=3,f\\'=4,g\\'=5, find (fg)\\'.',22,20,12,'Product rule: 4×3 + 2×5 = 22.');
+  if(i===7)return q('If f=2,g=4,f\\'=3,g\\'=1, find (f/g)\\'.','10/16','14/16','3/4','Quotient rule: (3×4 − 2×1)/4².');
+  if(i===8)return q('Find derivative of 1/cos x at x=0.',0,1,-1,'The derivative is sin x / cos²x.');
+  if(i===9)return q('Evaluate −1/sin²x at x=90°.',-1,1,0,'sin 90° = 1.');
+  if(i===10)return q('For f(x)=2ˣ, find f\\'(1).','2 ln 2','ln 2',4,'The derivative is 2ˣ ln 2.');
+  if(i===11)return q('Find derivative of arcsin x at x=0.',1,0,-1,'1/√(1−0²) = 1.');
+  if(i===12)return q('Find derivative of arctan x at x=0.',1,0,2,'1/(1+0²) = 1.');
+  if(i===13)return q('Find derivative of constant 7.',0,1,7,'The derivative of a constant is zero.');
+  return q('If f\\'(g(x))=3 and g\\'(x)=4, find the chain-rule product.',12,7,1,'Multiply 3 × 4.');
+ case 'int':
+  if(i===0)return q('For n=2, evaluate x^(n+1)/(n+1) at x=2.','8/3','4','2','Substitute x=2 and n=2.');
+  if(i===1)return q('Evaluate ln|x| at x=1.',0,1,-1,'ln 1 = 0.');
+  if(i===2)return q('Evaluate eˣ at x=0.',1,0,'e','e⁰ = 1.');
+  if(i===3)return q('For a=2, evaluate aˣ/ln a at x=1.','2/ln 2','ln 2',4,'Substitute x=1.');
+  if(i===4)return q('Evaluate −cos x at x=0.',-1,0,1,'−cos 0 = −1.');
+  if(i===5)return q('Evaluate sin x at x=0.',0,1,-1,'sin 0 = 0.');
+  if(i===6)return q('Evaluate tan x at x=0.',0,1,-1,'tan 0 = 0.');
+  if(i===7)return q('Evaluate −cot x at x=90°.',0,1,-1,'cot 90° = 0.');
+  if(i===8)return q('Evaluate 1/cos x at x=0.',1,0,-1,'1/cos 0 = 1.');
+  if(i===9)return q('Evaluate arcsin x at x=0.',0,1,-1,'arcsin 0 = 0.');
+  if(i===10)return q('Evaluate arctan x at x=1.','π/4','π/2',0,'arctan 1 = π/4.');
+  return q('If F(2)=7 and F(1)=3, find the definite integral from 1 to 2.',4,10,-4,'F(2) − F(1) = 4.');
+ }
+ return null;
+}
+
+
+const LANG_KEY='ump-language-v1';
+let currentLanguage='en'; try{currentLanguage=localStorage.getItem(LANG_KEY)||'en';}catch{}
+const UI_RU={all:'Все темы',groups:'Разделы формул',learn:'Изучить формулы',title:'Запоминание формул',start:'Начать тренировку',reset:'Сбросить результаты',formula:'Формула',practice:'Практика',next:'Далее',finish:'Завершить',delete:'Удалить все результаты тренировок?',complete:'Тренировка завершена',mistakes:'Работа над ошибками',first:'с первой попытки',noMistakes:'Ошибок нет. Отличное знание материала.',answer:'Ответ: ',chose:'Ваш ответ:',slip:'Где ошибка:',method:'Решение:',byTopic:'По темам',topic:'Тема',nextReview:'Следующее повторение',new:'Новая тренировка',home:'На главную',timeRan:'Время истекло',end:'Завершить тренировку'};
+const TOPIC_RU={sqrt:'Квадратные корни',pow:'Степени',binom:'Формулы сокращённого умножения',eq:'Уравнения',log:'Логарифмы',trig:'Тригонометрия',der:'Производные',int:'Интегралы'};
+const WORD_RU={'What is':'Чему равно','Evaluate':'Вычислите','Simplify':'Упростите','Expand':'Раскройте скобки','Factor':'Разложите на множители','Solve':'Решите','If':'Если','find':'найдите','derivative of':'производную','Standard trigonometric value':'Табличное значение','Product rule':'Правило произведения','Quotient rule':'Правило частного','Power rule':'Правило степени','Chain rule':'Правило цепочки','Difference of squares':'Разность квадратов','Square of a sum':'Квадрат суммы','Square of a difference':'Квадрат разности','Cube of a sum':'Куб суммы','Cube of a difference':'Куб разности','The derivative is':'Производная равна','The derivative of a constant is zero':'Производная постоянной равна нулю','The reciprocal of':'Обратное значение','Wrong':'Неверно','Sign error':'Ошибка знака','Missing minus':'Пропущен минус','The Pythagorean identity equals 1.':'Основное тригонометрическое тождество равно 1.','Check the substitution.':'Проверьте подстановку.','Recheck the arithmetic.':'Проверьте вычисления.'};
+function T(k){return currentLanguage==='ru'?(UI_RU[k]||k):({all:'All topics',groups:'Formula groups',learn:'Learn formulas',title:'Formula Memorization',start:'Start Training',reset:'Reset my results',formula:'Formula',practice:'Practice',next:'Next',finish:'Finish',delete:'Delete all practice results?',complete:'Session complete',mistakes:'Mistakes round',first:'first try',noMistakes:'No mistakes — solid recall.',answer:'Answer: ',chose:'You chose:',slip:'Likely slip:',method:'Method:',byTopic:'By topic',topic:'Topic',nextReview:'Next review',new:'New session',home:'Home',timeRan:'Time ran out',end:'End session'}[k]||k);}
+function localize(s){if(currentLanguage!=='ru'||typeof s!=='string')return s;return s.split(/(\\\([\s\S]*?\\\))/g).map(p=>{if(p.startsWith('\\('))return p.replace(/\\arctan/g,'\\operatorname{arctg}').replace(/\\sec\^2/g,'\\dfrac{1}{\\cos^2').replace(/\\csc\^2/g,'\\dfrac{1}{\\sin^2').replace(/\\sec/g,'\\dfrac{1}{\\cos}').replace(/\\csc/g,'\\dfrac{1}{\\sin}').replace(/\\tan/g,'\\operatorname{tg}').replace(/\\cot/g,'\\operatorname{ctg}');let o=p;Object.keys(WORD_RU).sort((a,b)=>b.length-a.length).forEach(k=>o=o.split(k).join(WORD_RU[k]));return o;}).join('');}
+
 const byId = id => TOPICS.find(t => t.id === id);
 const ALL = TOPICS;
 
@@ -834,7 +929,7 @@ function buildSession(scope) {
       formulaItems.push({ topic: t.id, i, phase: 'formula', key: `${t.id}-f-${i}` });
     });
     // Phase 2: one instance per formula (if topic has a generator)
-    if (typeof t.gen === 'function') {
+    if (true) {
       t.formulas.forEach((_, i) => {
         instanceItems.push({ topic: t.id, i, phase: 'instance', key: `${t.id}-i-${i}` });
       });
@@ -848,7 +943,7 @@ function buildSession(scope) {
 function getQuestion(it) {
   const t = byId(it.topic);
   if (it.phase === 'instance' && typeof t.gen === 'function') {
-    return t.gen();
+    return generatedPractice(it.topic,it.i) || t.gen();
   }
   return t.formulas[it.i];
 }
@@ -879,9 +974,9 @@ let currentScope = 'all';
 function buildDropdown() {
   const menu = $('dd-menu');
   let html = `<button type="button" class="dd-item ${currentScope === 'all' ? 'active' : ''}" data-val="all">All topics</button>`;
-  html += `<div class="dd-group"><div class="dd-group-label">Formula groups</div>`;
+  html += `<div class="dd-group"><div class="dd-group-label">${currentLanguage==="ru"?"Разделы формул":"Formula groups"}</div>`;
   ALL.forEach(t => {
-    html += `<button type="button" class="dd-item ${currentScope === ('topic:' + t.id) ? 'active' : ''}" data-val="topic:${t.id}">${t.name}</button>`;
+    html += `<button type="button" class="dd-item ${currentScope === ('topic:' + t.id) ? 'active' : ''}" data-val="topic:${t.id}">${currentLanguage==="ru"?TOPIC_RU[t.id]:t.name}</button>`;
   });
   html += `</div>`;
   menu.innerHTML = html;
@@ -943,7 +1038,7 @@ function updateMeta() {
 $('start').onclick = () => startSession('main', currentScope, buildSession(currentScope));
 $('learnbtn').onclick = () => startLearn(currentScope);
 $('reset').onclick = () => {
-  if (confirm('Delete all practice results?')) {
+  if (confirm(T('delete'))) {
     try { [STORAGE.attempts, STORAGE.state].forEach(k => localStorage.removeItem(k)); } catch {}
     updateMeta();
   }
@@ -1023,7 +1118,7 @@ function timeoutAnswer() {
       m.textContent = '✓';
     }
   });
-  $('fb').textContent = 'Time’s up. ' + q.e;
+  $('fb').textContent = (currentLanguage==='ru'?'Время вышло. ':'Time’s up. ') + localize(q.e);
   $('next').classList.add('show');
   if (!coarse()) $('next').focus({ preventScroll: true });
 }
@@ -1064,15 +1159,15 @@ function renderQ() {
   const body = $('sbody');
   body.classList.remove('math-ready');
 
-  const phaseLabel = it.phase === 'formula' ? 'Formula' : 'Practice';
+  const phaseLabel = it.phase === 'formula' ? T('formula') : T('practice');
   body.innerHTML = `
     <p class="phase-tag">${phaseLabel}</p>
-    <p class="question" id="qtext">${q.q}</p>
+    <p class="question" id="qtext">${localize(q.q)}</p>
     <div class="options" role="group" aria-labelledby="qtext">
-      ${order.map(k => `<button type="button" class="option" data-k="${k}"><span>${q.o[k]}</span><span class="mark" aria-hidden="true"></span></button>`).join('')}
+      ${order.map(k => `<button type="button" class="option" data-k="${k}"><span>${localize(q.o[k])}</span><span class="mark" aria-hidden="true"></span></button>`).join('')}
     </div>
     <p class="fbline" id="fb" aria-live="polite"></p>
-    <button type="button" class="btn" id="next">${S.idx + 1 < S.queue.length ? 'Next' : 'Finish'}</button>`;
+    <button type="button" class="btn" id="next">${S.idx + 1 < S.queue.length ? T('next') : T('finish')}</button>`;
 
   document.querySelectorAll('.option').forEach(b => {
     b.onclick = () => answer(b, it, q);
@@ -1105,7 +1200,7 @@ function answer(btn, it, q) {
     if (isC) { o.classList.add('correct'); m.textContent = '✓'; }
     else if (o === btn) { o.classList.add('wrong'); m.textContent = '✗'; }
   });
-  $('fb').textContent = ok ? '' : q.e;
+  $('fb').textContent = ok ? '' : localize(q.e);
   $('next').classList.add('show');
   if (!coarse()) $('next').focus({ preventScroll: true });
 }
@@ -1175,11 +1270,11 @@ function endSession() {
     });
 
   let h = `<div><h2 id="review-h">${S.kind === 'retry' ? 'Mistakes round' : 'Session complete'}</h2>
-    <p class="score">${right}/${firsts.length}<small>first try</small></p>
+    <p class="score">${right}/${firsts.length}<small>${T("first")}</small></p>
     <p class="sub">${mmss(Date.now() - S.t0)}</p></div>`;
 
   if (!missed.length) {
-    h += `<div class="clean">No mistakes — solid recall.</div>`;
+    h += `<div class="clean">${T("noMistakes")}</div>`;
   } else {
     h += `<div class="sec"><h3>Review now (${missed.length})</h3>`;
     missed.forEach(m => {
@@ -1188,20 +1283,20 @@ function endSession() {
       const chosenText = m.timeout ? 'Time ran out' : (q.o[m.chosen] || '?');
       const slip = m.timeout ? 'Ran out of time' : (q.w && q.w[m.chosen] ? q.w[m.chosen] : '');
       h += `<details class="miss"><summary><span class="q">${q.q}</span><span class="a">Answer: ${q.o[q.a]}${fixed ? ' · fixed on second try' : ''}</span></summary>
-        <div class="why"><span><b>You chose:</b> ${chosenText}</span><span><b>Likely slip:</b> ${slip}</span><span><b>Method:</b> ${q.e}</span></div></details>`;
+        <div class="why"><span><b>${T("chose")}</b> ${chosenText}</span><span><b>${T("slip")}</b> ${slip}</span><span><b>${T("method")}</b> ${q.e}</span></div></details>`;
     });
     h += `</div>`;
   }
 
-  h += `<div class="sec"><h3>By topic</h3><table><thead><tr><th>Topic</th><th>First try</th><th>Next review</th></tr></thead><tbody>`;
+  h += `<div class="sec"><h3>${T("byTopic")}</h3><table><thead><tr><th>${T("topic")}</th><th>${T("first")}</th><th>${T("nextReview")}</th></tr></thead><tbody>`;
   Object.entries(byTopic).forEach(([id, a]) => {
     h += `<tr><td>${byId(id).name}</td><td>${a.filter(x => x.correct).length}/${a.length}</td><td>${sched[id] ? `box ${sched[id].box} · ${inDays(sched[id].due)}` : '–'}</td></tr>`;
   });
   h += `</tbody></table></div>`;
 
   h += `<div class="actions">${nextMiss.length ? `<button type="button" class="btn" id="rmist">Practise my mistakes (${nextMiss.length})</button>` : ''}
-    <button type="button" class="btn ${nextMiss.length ? 'secondary' : ''}" id="rnew">New session</button>
-    <button type="button" class="link" id="rhome">Home</button></div>`;
+    <button type="button" class="btn ${nextMiss.length ? 'secondary' : ''}" id="rnew">${T("new")}</button>
+    <button type="button" class="link" id="rhome">${T("home")}</button></div>`;
 
   const rev = $('review');
   rev.classList.remove('math-ready');
@@ -1216,6 +1311,8 @@ function endSession() {
 }
 
 showHome();
+const ls=$('language-select');ls.value=currentLanguage;ls.addEventListener('change',e=>{currentLanguage=e.target.value;try{localStorage.setItem(LANG_KEY,currentLanguage);}catch{};document.documentElement.lang=currentLanguage;applyLanguage();if($('learn').classList.contains('on'))startLearn(learnScope);if($('session').classList.contains('on')&&S)renderQ();if($('review').classList.contains('on')&&S)endSession();});
+function applyLanguage(){$('learnbtn').textContent=T('learn');$('home-h').textContent=T('title');$('start').textContent=T('start');$('reset').textContent=T('reset');$('home-foot').firstChild.textContent=currentLanguage==='ru'?'Результаты хранятся только в этом браузере. ':'Results stay in this browser only. ';buildDropdown();const b=[...$('dd-menu').querySelectorAll('.dd-item')].find(x=>x.dataset.val===currentScope);$('dd-toggle').textContent=b?b.textContent:T('all');updateMeta();}document.documentElement.lang=currentLanguage;applyLanguage();
 </script>
 </body>
 </html>
