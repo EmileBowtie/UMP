@@ -861,7 +861,7 @@ function generatedPractice(topic,i){
  case 'trig':
   if(i===0){const v={30:'1/2',45:'√2/2',60:'√3/2'}[angle];return q('Evaluate sin '+angle+'°.',v,'1','0','Substitute the randomly selected standard angle.');}
   if(i===1){const v={30:'√3/2',45:'√2/2',60:'1/2'}[angle];return q('Evaluate cos '+angle+'°.',v,'1','0','Substitute the randomly selected standard angle.');}
-  if(i===2){const v={30:'1/√3',45:'1',60:'√3'}[angle];return q('Evaluate tan '+angle+'°.',v,'0','1','Substitute the randomly selected standard angle.');}
+  if(i===2){const v={30:'1/√3',45:'1',60:'√3'}[angle];return q('Evaluate tan '+angle+'°.',v,'0','2','Substitute the randomly selected standard angle.');}
   if(i===3){const [p,r,h]=triple;return q('If sin θ = '+p+'/'+h+' and cos θ = '+r+'/'+h+', find sin² θ + cos² θ.',1,0,2,'The Pythagorean identity equals 1.');}
   if(i===4){const v={30:'√3/2',45:'√2/2',60:'1/2'}[angle];return q('Evaluate sin(90° − '+angle+'°).',v,'1','0','Use the co-function identity.');}
   if(i===5){const [p,r,h]=triple;return q('If sin θ = '+p+'/'+h+' and cos θ = '+r+'/'+h+', find 2sin θ cos θ.',(2*p*r)+'/'+(h*h),(p*r)+'/'+(h*h),(p+r)+'/'+h,'Multiply 2 × sin θ × cos θ.');}
@@ -888,7 +888,7 @@ function generatedPractice(topic,i){
   if(i===11){const z=pick([0,0.6,0.8]),v=z===0?'1':z===0.6?'5/4':'5/3';return q('Find derivative of arcsin x at x='+z+'.',v,'2','0','Use 1/√(1−x²).');}
   if(i===12){const z=randInt(0,2),v=1/(1+z*z);return q('Find derivative of arctan x at x='+z+'.',String(v),String(v+0.5),String(v/2),'Use 1/(1+x²).');}
   if(i===13)return q('Find derivative of the constant '+a+'.',0,1,a,'The derivative of a constant is zero.');
-  {const u=randInt(2,6),chainV=randInt(2,6);return q('If f\'(g(x))='+u+' and g\'(x)='+chainV+', find the chain-rule product.',u*chainV,u+chainV,u*chainV+1,'Multiply the two derivatives.');}
+  {const u=randInt(2,6),chainV=u===6?3:u+1;return q('If f\'(g(x))='+u+' and g\'(x)='+chainV+', find the chain-rule product.',u*chainV,u+chainV,u*chainV+1,'Multiply the two derivatives.');}
  case 'int':
   if(i===0)return q('For n='+n+', evaluate x^(n+1)/(n+1) at x='+x+'.',(x**(n+1))+'/'+(n+1),(x**n)+'/'+n,(x**(n+1))+'/'+n,'Substitute the randomly generated x and n.');
   if(i===1)return q('Evaluate ln|x| at x='+x+'.','ln '+x,'ln '+(x+1),'ln '+(x-1),'Substitute the generated positive x value.');
