@@ -173,12 +173,9 @@
     text-align: center; color: #b8aec8; font-size: 0.8rem;
   }
   .home-foot .link { color: #c4b8d4; font-size: 0.8rem; }
-  .language-dd { flex: 0 0 auto; width: 156px; }
-  .language-dd .dd-toggle { justify-content: flex-start; min-height: 42px; padding-top: 9px; padding-bottom: 9px; }
-  .language-dd .dd-menu { max-height: 160px; }
-  .dd.dropup .dd-menu { top: auto; bottom: calc(100% + 6px); }
-  .dd.dropup .dd-toggle::after { transform: translateY(-40%) rotate(180deg); }
-  .dd.dropup.open .dd-toggle::after { transform: translateY(-40%) rotate(0deg); }
+  .language-select { width:156px; min-height:42px; flex:0 0 auto; appearance:none; -webkit-appearance:none; background-color:rgba(18,16,26,.92); color:#e8e2f0; border:1px solid #3a3448; border-radius:12px; padding:9px 38px 9px 14px; font:inherit; font-size:.92rem; cursor:pointer; backdrop-filter:blur(8px); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23b8aec8' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
+  .language-select:focus { outline:none; border-color:var(--neon); box-shadow:0 0 0 1px rgba(232,121,249,.3); }
+  .language-select option { background:#16131f; color:#e8e2f0; }
 
   /* Custom dropdown */
   .dd { position: relative; flex: 1 1 200px; min-width: 0; text-align: left; }
@@ -408,10 +405,10 @@
         <p class="meta" id="meta" aria-live="polite"></p>
       </div>
       <div class="home-foot" id="home-foot">
-        <div class="dd dropup language-dd" id="language-dd">
-          <button type="button" class="dd-toggle" id="language-toggle" aria-haspopup="listbox" aria-expanded="false">English</button>
-          <div class="dd-menu" id="language-menu" role="listbox"></div>
-        </div>
+        <select class="language-select" id="language-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
         <div class="foot-copy"><span id="foot-copy">Results stay in this browser only.</span> <button type="button" class="link" id="reset">Reset my results</button></div>
       </div>
     </section>
@@ -1340,39 +1337,19 @@ function endSession() {
 
 showHome();
 function buildLanguageDropdown() {
-  const menu = $('language-menu');
-  const languages = [{ value: 'en', label: 'English' }, { value: 'ru', label: 'Русский' }];
-  menu.innerHTML = languages.map(item =>
-    '<button type="button" class="dd-item ' + (currentLanguage === item.value ? 'active' : '') +
-    '" role="option" aria-selected="' + (currentLanguage === item.value) +
-    '" data-lang="' + item.value + '">' + item.label + '</button>'
-  ).join('');
-  menu.querySelectorAll('.dd-item').forEach(btn => {
-    btn.onclick = () => setLanguage(btn.dataset.lang);
-  });
-  $('language-toggle').textContent = currentLanguage === 'ru' ? 'Русский' : 'English';
+  $('language-select').value = currentLanguage;
 }
 function setLanguage(language) {
   if (!['en', 'ru'].includes(language)) return;
   currentLanguage = language;
   try { localStorage.setItem(LANG_KEY, currentLanguage); } catch {}
   document.documentElement.lang = currentLanguage;
-  $('language-dd').classList.remove('open');
-  $('language-toggle').setAttribute('aria-expanded', 'false');
   applyLanguage();
   if ($('learn').classList.contains('on')) startLearn(learnScope);
   if ($('session').classList.contains('on') && S) renderQ();
   if ($('review').classList.contains('on') && S) endSession();
 }
-$('language-toggle').onclick = e => {
-  e.stopPropagation();
-  const open = $('language-dd').classList.toggle('open');
-  $('language-toggle').setAttribute('aria-expanded', String(open));
-};
-document.addEventListener('click', () => {
-  $('language-dd').classList.remove('open');
-  $('language-toggle').setAttribute('aria-expanded', 'false');
-});
+$('language-select').addEventListener('change', e => setLanguage(e.target.value));
 function applyLanguage() {
   $('learnbtn').textContent = T('learn');
   $('home-h').textContent = T('title');
