@@ -1,0 +1,33 @@
+{
+  "name": "UMP",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "UMP": {
+        "$className": "Folder",
+        "FormulaData": {
+          "$path": "src/ReplicatedStorage/UMP/FormulaData.lua"
+        },
+        "ProgressRemote": {
+          "$className": "RemoteFunction"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "UMPData": {
+        "$path": "src/ServerScriptService/UMPData.server.lua"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "UMPClient": {
+          "$path": "src/StarterPlayer/StarterPlayerScripts/UMP.client.lua"
+        }
+      }
+    }
+  }
+}
